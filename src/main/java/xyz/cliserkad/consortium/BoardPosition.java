@@ -2,6 +2,8 @@ package xyz.cliserkad.consortium;
 
 import java.awt.Color;
 
+import static xyz.cliserkad.consortium.Main.*;
+
 public enum BoardPosition {
 	GO,
 	MEDITERRANEAN_AVENUE(new Color(0x8B4513)),
@@ -55,6 +57,9 @@ public enum BoardPosition {
 	}
 
 	public BoardPosition next() {
+		if(ordinal() == values().length - 1) {
+			return values()[0];
+		}
 		return BoardPosition.values()[ordinal() + 1];
 	}
 
@@ -64,6 +69,26 @@ public enum BoardPosition {
 				"\n\tname: " + name() + "," +
 				"\n\tcolor: " + color + "," +
 				"\n}";
+	}
+
+	public Point2i getBoardCoords() {
+		final int x;
+		final int y;
+		final int placeInRow = ordinal() % BOARD_X_SIZE_LESS_ONE;
+		if(ordinal() < BOARD_X_SIZE_LESS_ONE) {
+			x = BOARD_X_SIZE_LESS_ONE - placeInRow;
+			y = BOARD_Y_SIZE_LESS_ONE;
+		} else if(ordinal() < BOARD_X_SIZE_LESS_ONE * 2) {
+			x = 0;
+			y = BOARD_Y_SIZE_LESS_ONE - placeInRow;
+		} else if(ordinal() < BOARD_X_SIZE_LESS_ONE * 3) {
+			x = placeInRow;
+			y = 0;
+		} else {
+			x = BOARD_X_SIZE_LESS_ONE;
+			y = placeInRow;
+		}
+		return new Point2i(x, y);
 	}
 
 }
