@@ -49,17 +49,7 @@ public class Main {
 		frame.add(panel);
 		frame.setVisible(true);
 
-		while(true) {
-			for(Player player : players) {
-				player.setPosition(player.getPosition().next(), boardElements);
-				frame.repaint();
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		boardElements.get(1).setOwner(players.getFirst());
 
 	}
 

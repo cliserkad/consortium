@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends JPanel {
+	public static final String[] PLAYER_ICONS = { "🎩", "🐈", "💰", "😎" };
+
 	private static int numPlayers = 0;
 
 	private int money;
@@ -83,6 +85,10 @@ public class Player extends JPanel {
 	public void addMoney(int amount) {
 		money += amount;
 		repaint();
+	}
+
+	public String getIcon() {
+		return PLAYER_ICONS[playerIndex];
 	}
 
 }
