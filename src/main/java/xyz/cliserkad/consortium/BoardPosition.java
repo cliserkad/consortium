@@ -4,6 +4,9 @@ import java.awt.Color;
 
 import static xyz.cliserkad.consortium.Main.*;
 
+/**
+ * Represents the static data for each position on the board
+ */
 public enum BoardPosition {
 	GO,
 	MEDITERRANEAN_AVENUE(
@@ -16,81 +19,122 @@ public enum BoardPosition {
 		, new StandardLogic(60, 50, new int[]{ 4, 20, 60, 180, 320, 450 })
 	),
 	INCOME_TAX,
-	READING_RAILROAD(
-		  new Color(0x000000)
-		, true
-		, 200
-		, -1
-		, new int[]{ 25, 50, 100, 200, 0, 0 }
-	),
+	READING_RAILROAD(),
 	ORIENTAL_AVENUE(
 		new Color(0xB2FFE8)
-		, 100
-		, new int[]{ 6, 30, 90, 270, 400, 550 }
+		, new StandardLogic(100, 50, new int[] {6, 30, 90, 270, 400, 550 })
 	),
 	CHANCE_1,
 	VERMONT_AVENUE(
 		ORIENTAL_AVENUE.color
-		, 100
-		, new int[]{ 6, 30, 90, 270, 400, 550 }
+		, new StandardLogic(100, 50, new int[]{ 6, 30, 90, 270, 400, 550 })
 	),
 	CONNECTICUT_AVENUE(
 		ORIENTAL_AVENUE.color
-		, 120
-		, new int[]{ 8, 40, 100, 300, 450, 600 }
+		, new StandardLogic(120, 50, new int[]{ 8, 40, 100, 300, 450, 600 })
 	),
 	JAIL,
 	ST_CHARLES_PLACE(
 		new Color(0xB019AA)
-		, 140
-		, new int[]{ 10, 50, 150, 450, 625, 750 }
+		, new StandardLogic(140, 100, new int[]{ 10, 50, 150, 450, 625, 750 })
 	),
 	ELECTRIC_COMPANY(
-		new Color(0, 0, 0, 0)
-		, true
-		, 150
-		, -1
-		, new int[]{ 0, 0, 0, 0, 0, 0 }
+		new Color(255, 255, 255)
+		, new UtilityLogic()
 	),
-	STATES_AVENUE(ST_CHARLES_PLACE.color),
-	VIRGINIA_AVENUE(ST_CHARLES_PLACE.color),
-	PENNSYLVANIA_RAILROAD(READING_RAILROAD.color),
-	ST_JAMES_PLACE(new Color(0xC95C14)),
+	STATES_AVENUE(
+		ST_CHARLES_PLACE.color
+		, new StandardLogic(140, 100, new int[]{ 10, 50, 150, 450, 625, 750 })
+	),
+	VIRGINIA_AVENUE(
+		ST_CHARLES_PLACE.color
+		, new StandardLogic(160, 100, new int[]{ 12, 60, 180, 500, 700, 900 })
+	),
+	PENNSYLVANIA_RAILROAD(
+		READING_RAILROAD.color
+		, new RailRoadLogic()
+	),
+	ST_JAMES_PLACE(
+		new Color(0xC95C14)
+		, new StandardLogic(180, 100, new int[]{ 14, 70, 200, 550, 750, 950 })
+	),
 	COMMUNITY_CHEST_2,
-	TENNESSEE_AVENUE(ST_JAMES_PLACE.color),
-	NEW_YORK_AVENUE(ST_JAMES_PLACE.color),
+	TENNESSEE_AVENUE(
+		ST_JAMES_PLACE.color
+		, new StandardLogic(180, 100, new int[]{ 14, 70, 200, 550, 750, 950 })
+	),
+	NEW_YORK_AVENUE(
+		ST_JAMES_PLACE.color
+		, new StandardLogic(200, 100, new int[]{ 16, 80, 220, 600, 800, 1000 })
+	),
 	FREE_PARKING(
-		new Color(0, 0, 0, 0),
+		Color.WHITE,
 		NoLogic.INSTANCE
 	),
-	KENTUCKY_AVENUE(new Color(0xE50D1E)),
+	KENTUCKY_AVENUE(
+		new Color(0xE50D1E)
+		, new StandardLogic(220, 150, new int[]{ 18, 90, 250, 700, 875, 1050 })
+	),
 	CHANCE_2,
-	INDIANA_AVENUE(KENTUCKY_AVENUE.color),
-	ILLINOIS_AVENUE(KENTUCKY_AVENUE.color),
-	B_AND_O_RAILROAD(READING_RAILROAD.color),
-	ATLANTIC_AVENUE(new Color(0xE5DA16)),
-	VENTNOR_AVENUE(ATLANTIC_AVENUE.color),
+	INDIANA_AVENUE(
+		KENTUCKY_AVENUE.color
+		, new StandardLogic(220, 150, new int[]{ 18, 90, 250, 700, 875, 1050 })
+	),
+	ILLINOIS_AVENUE(
+		KENTUCKY_AVENUE.color
+		, new StandardLogic(240, 150, new int[]{ 20, 100, 300, 750, 925, 1100 })
+	),
+	B_AND_O_RAILROAD(
+		READING_RAILROAD.color
+		, new RailRoadLogic()
+	),
+	ATLANTIC_AVENUE(
+		new Color(0xE5DA16)
+		, new StandardLogic(260, 150, new int[]{ 22, 110, 330, 800, 975, 1150 })
+	),
+	VENTNOR_AVENUE(
+		ATLANTIC_AVENUE.color
+		, new StandardLogic(260, 150, new int[]{ 22, 110, 330, 800, 975, 1150 })
+	),
 	WATER_WORKS,
-	MARVIN_GARDENS(ATLANTIC_AVENUE.color),
+	MARVIN_GARDENS(
+		ATLANTIC_AVENUE.color
+		, new StandardLogic(280, 150, new int[]{ 24, 120, 360, 850, 1025, 1200 })
+	),
 	GO_TO_JAIL,
-	PACIFIC_AVENUE(new Color(0x1DE81D)),
-	NORTH_CAROLINA_AVENUE(PACIFIC_AVENUE.color),
+	PACIFIC_AVENUE(
+		new Color(0x1DE81D)
+		, new StandardLogic(300, 200, new int[]{ 26, 130, 390, 900, 1100, 1275 })
+	),
+	NORTH_CAROLINA_AVENUE(
+		PACIFIC_AVENUE.color
+		, new StandardLogic(300, 200, new int[]{ 26, 130, 390, 900, 1100, 1275 })
+	),
 	COMMUNITY_CHEST_3,
-	PENSNSYLVANIA_AVENUE(PACIFIC_AVENUE.color),
-	SHORT_LINE(READING_RAILROAD.color),
+	PENSNSYLVANIA_AVENUE(
+		PACIFIC_AVENUE.color
+		, new StandardLogic(320, 200, new int[]{ 28, 150, 450, 1000, 1200, 1400 })
+	),
+	SHORT_LINE(
+		READING_RAILROAD.color
+		, new RailRoadLogic()
+	),
 	CHANCE_3,
-	PARK_PLACE(new Color(0x1D1DE8)),
+	PARK_PLACE(
+		new Color(0x1D1DE8)
+		, new StandardLogic(350, 200, new int[]{ 35, 175, 500, 1100, 1300, 1500 })
+	),
 	LUXURY_TAX,
-	BOARDWALK(PARK_PLACE.color);
+	BOARDWALK(
+		PARK_PLACE.color
+		, new StandardLogic(400, 200, new int[]{ 50, 200, 600, 1400, 1700, 2000 })
+	);
 
 	public final Color color;
-	public final boolean isOwnable;
-
-
 	public final PositionLogic logic;
 
 	BoardPosition() {
-		this(new Color(0, 0, 0, 0), new StandardLogic(0, 0, new int[]{ 0, 0, 0, 0, 0, 0 }));
+		this(Color.WHITE, new NoLogic());
 	}
 
 	BoardPosition(final Color color, final PositionLogic logic) {
@@ -103,6 +147,10 @@ public enum BoardPosition {
 			return values()[0];
 		}
 		return BoardPosition.values()[ordinal() + 1];
+	}
+
+	public boolean isPurchasable() {
+		return logic.isPurchasable();
 	}
 
 	@Override

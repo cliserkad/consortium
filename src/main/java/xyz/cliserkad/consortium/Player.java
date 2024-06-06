@@ -61,17 +61,20 @@ public class Player extends JPanel {
 		return position;
 	}
 
-	public void setPosition(BoardPosition position, List<BoardElement> boardElements) {
-		for(BoardElement element : boardElements) {
+	/**
+	 * Sets the player's position on the board and updates the board elements
+	 */
+	public void setPosition(BoardPosition position, Main main) {
+		for(BoardElement element : main.getBoardElements()) {
 			if(element.position == this.position) {
 				element.removePlayer(this);
 				element.repaint();
 			}
 		}
 		this.position = position;
-		for(BoardElement element : boardElements) {
+		for(BoardElement element : main.getBoardElements()) {
 			if(element.position == position) {
-				element.addPlayer(this);
+				element.addPlayer(this, main);
 				element.repaint();
 			}
 		}

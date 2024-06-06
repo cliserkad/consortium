@@ -1,6 +1,6 @@
 package xyz.cliserkad.consortium;
 
-public class StandardLogic implements PositionLogic {
+public class StandardLogic implements Purchasable {
 
 	public final int cost;
 	public final int costPerHouse;
@@ -13,18 +13,18 @@ public class StandardLogic implements PositionLogic {
 	}
 
 	@Override
-	public void onLand(Player player) {
+	public void onLand(Player mover, Main main) {
 
 	}
 
 	@Override
-	public void onPass(Player player) {
+	public void onPass(Player mover, Main main) {
 
 	}
 
 	@Override
-	public boolean isOwnable() {
-		return true;
+	public int cost() {
+		return cost;
 	}
 
 }
