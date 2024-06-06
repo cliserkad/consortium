@@ -2,10 +2,12 @@ package xyz.cliserkad.consortium;
 
 public interface PositionLogic {
 
-	void onLand(Player player);
+	void onLand(Player mover, Main main);
 
-	void onPass(Player player);
+	void onPass(Player mover, Main main);
 
-	boolean isOwnable();
+	default boolean isPurchasable() {
+		return this instanceof Purchasable;
+	}
 
 }

@@ -2,8 +2,11 @@ package xyz.cliserkad.consortium;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Main {
 	public static final int BOARD_X_SIZE = 11;
@@ -11,6 +14,8 @@ public class Main {
 	public static final int BOARD_Y_SIZE = 11;
 	public static final int BOARD_Y_SIZE_LESS_ONE = BOARD_Y_SIZE - 1;
 	public static final String WINDOW_TITLE = "Consortium";
+
+	public static final Random RANDOM = new Random();
 
 
 	private List<Player> players;
@@ -46,11 +51,21 @@ public class Main {
 			panel.add(players.get(i), constraints);
 		}
 
+		JButton button = new JButton("CLICK TO ADVANCE");
+		button.addActionListener(actionEvent -> {
+			players.get(0).setPosition(players.get(0).getPosition().next(), this);
+		});
+		constraints.gridy = 6;
+		constraints.gridx = 3;
+		panel.add(button, constraints);
+
 		frame.add(panel);
 		frame.setVisible(true);
 
-		boardElements.get(1).setOwner(players.getFirst());
+	}
 
+	public List<BoardElement> getBoardElements() {
+		return boardElements;
 	}
 
 	public static void main(String[] args) throws InterruptedException {
