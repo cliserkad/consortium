@@ -144,6 +144,7 @@ public enum BoardPosition {
 
 	public final Color color;
 	public final PositionLogic logic;
+	public final String niceName;
 
 	BoardPosition() {
 		this(Color.WHITE, new NoLogic());
@@ -152,6 +153,7 @@ public enum BoardPosition {
 	BoardPosition(final Color color, final PositionLogic logic) {
 		this.color = color;
 		this.logic = logic;
+		this.niceName = niceName();
 	}
 
 	public BoardPosition next() {
@@ -172,6 +174,22 @@ public enum BoardPosition {
 				"\n\tname: " + name() + "," +
 				"\n\tcolor: " + color + "," +
 				"\n}";
+	}
+
+	private String niceName() {
+		final String name = name().replace("_", " ");
+		StringBuilder out = new StringBuilder();
+		out.append(Character.toUpperCase(name.charAt(0)));
+		for(int i = 1; i < name.length(); i++) {
+			if(!Character.isDigit(name.charAt(i))) {
+				if(name.charAt(i - 1) == ' ') {
+					out.append(Character.toUpperCase(name.charAt(i)));
+				} else {
+					out.append(Character.toLowerCase(name.charAt(i)));
+				}
+			}
+		}
+		return out.toString();
 	}
 
 	public Point2i getBoardCoords() {

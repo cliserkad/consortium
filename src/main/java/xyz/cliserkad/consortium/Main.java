@@ -95,15 +95,15 @@ public class Main {
 	public String purchasingLogic(Player player, BoardElement element) {
 		if(element.position.logic instanceof Purchasable purchasable && element.owner == null) {
 			if(player.getMoney() >= purchasable.cost()) {
-				final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to purchase " + element.position.name() + " for $" + purchasable.cost() + "?", "Purchase Property", JOptionPane.YES_NO_OPTION);
+				final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to purchase " + element.position.niceName + " for $" + purchasable.cost() + "?", "Purchase Property", JOptionPane.YES_NO_OPTION);
 				if(dialogResult == JOptionPane.YES_OPTION) {
 					player.addMoney(-purchasable.cost());
 					element.setOwner(player);
-					return player.getIcon() + " purchased " + element.position.name() + " for $" + purchasable.cost();
+					return player.getIcon() + " purchased " + element.position.niceName + " for $" + purchasable.cost();
 				}
-				return player.getIcon() + " chose not to purchase " + element.position.name();
+				return player.getIcon() + " chose not to purchase " + element.position.niceName;
 			}
-			return player.getIcon() + " could not purchase " + element.position.name() + " due to lack of funds";
+			return player.getIcon() + " could not purchase " + element.position.niceName + " due to lack of funds";
 		}
 		return EMPTY_STRING;
 	}
@@ -115,7 +115,7 @@ public class Main {
 			printIfContentful(element.position.logic.onPass(player, this));
 		}
 		player.setPosition(player.getPosition().next(spaces), this);
-		System.out.println(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().name());
+		System.out.println(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().niceName);
 		printIfContentful(player.getPosition().logic.onLand(player, this));
 		printIfContentful(purchasingLogic(player, getBoardElement(player)));
 	}

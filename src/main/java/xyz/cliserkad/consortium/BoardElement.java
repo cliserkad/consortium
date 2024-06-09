@@ -27,7 +27,7 @@ public class BoardElement extends JPanel {
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.NORTH;
 
-		nameLabel = new JLabel(position.name(), SwingConstants.CENTER);
+		nameLabel = new JLabel(" " + position.niceName + " ", SwingConstants.CENTER);
 		nameLabel.setForeground(Color.BLACK);
 		nameLabel.setBackground(Color.WHITE);
 		nameLabel.setOpaque(true);
