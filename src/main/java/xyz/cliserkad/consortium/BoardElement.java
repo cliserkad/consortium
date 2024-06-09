@@ -32,6 +32,7 @@ public class BoardElement extends JPanel {
 		nameLabel.setBackground(Color.WHITE);
 		nameLabel.setOpaque(true);
 		constraints.gridy = 1;
+		constraints.gridwidth = 4;
 		add(nameLabel, constraints);
 
 		if(position.logic instanceof Purchasable purchasable) {
@@ -73,9 +74,7 @@ public class BoardElement extends JPanel {
 		constraints.gridwidth = 1;
 		constraints.gridheight = 1;
 		constraints.fill = GridBagConstraints.NONE;
-		constraints.anchor = GridBagConstraints.SOUTH;
-
-
+		constraints.anchor = GridBagConstraints.SOUTHWEST;
 
 		constraints.gridx = player.playerIndex;
 		constraints.gridy = 4;

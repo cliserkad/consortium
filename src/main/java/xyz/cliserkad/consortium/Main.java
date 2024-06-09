@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -51,8 +52,25 @@ public class Main {
 			panel.add(boardElement, constraints);
 		}
 
+		constraints.gridy = 1;
+		constraints.gridx = 1;
+		constraints.gridwidth = 9;
+		constraints.gridheight = 5;
+		JTextArea printOutput = new JTextArea();
+		printOutput.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
+		printOutput.setEditable(false);
+		System.setOut(new PrintStream(new TextAreaOutputStream(printOutput)));
+		panel.add(
+			new JScrollPane(
+				printOutput,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+		), constraints);
+		constraints.gridwidth = 1;
+		constraints.gridheight = 1;
+
 		players = new Player[playerCount];
-		constraints.gridy = 5;
+		constraints.gridy = 6;
 		for(int i = 0; i < playerCount; i++) {
 			players[i] = new Player();
 			constraints.gridx = 3 + i;
@@ -66,7 +84,7 @@ public class Main {
 			endTurn();
 		});
 		constraints.gridy = 6;
-		constraints.gridx = 3;
+		constraints.gridx = 2;
 		panel.add(button, constraints);
 
 		frame.add(panel);

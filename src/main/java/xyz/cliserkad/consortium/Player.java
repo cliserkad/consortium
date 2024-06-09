@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends JPanel {
-	public static final String[] PLAYER_ICONS = { "🎩", "🐈", "💰", "😎" };
+	public static final String[] PLAYER_ICONS = { "🎩", "🐈", "💰", "👽" };
 
 	private static int numPlayers = 0;
 
