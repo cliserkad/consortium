@@ -2,12 +2,14 @@ package xyz.cliserkad.consortium;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.PrintStream;
 import java.util.Random;
 
 import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
 
-public class Main {
+public class Main implements ActionListener {
 	public static final int BOARD_X_SIZE = 11;
 	public static final int BOARD_X_SIZE_LESS_ONE = BOARD_X_SIZE - 1;
 	public static final int BOARD_Y_SIZE = 11;
@@ -15,6 +17,7 @@ public class Main {
 	public static final int DICE_MAX = 12;
 	public static final int DICE_MIN = 2;
 	public static final String WINDOW_TITLE = "Consortium";
+	public static final String PROMPT_TURN = "Prompt Turn";
 
 	public static final Random RANDOM = new Random();
 
@@ -77,18 +80,15 @@ public class Main {
 			players[i].setPosition(BoardPosition.GO, this);
 		}
 
-		JButton button = new JButton("CLICK TO ADVANCE");
-		button.addActionListener(actionEvent -> {
-			movePlayer(getCurrentPlayer(), rollDice());
-			endTurn();
-		});
-		constraints.gridy = 6;
-		constraints.gridx = 2;
-		panel.add(button, constraints);
-
 		frame.add(panel);
 		frame.setVisible(true);
 
+		// Game loop
+		Timer timer=new Timer(2000, this);
+		timer.setRepeats(true);
+		timer.setInitialDelay(5000);
+		timer.setActionCommand(PROMPT_TURN);
+		timer.start();
 	}
 
 	public String purchasingLogic(Player player, BoardElement element) {
@@ -166,7 +166,24 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		new Main(4);
+		new Main(2);
+	}
+
+	public boolean isEntireGroupOwned(BoardPosition queryPosition) {
+		BoardElement queryElement = getBoardElement(queryPosition);
+		for(BoardPosition position : queryPosition.colorGroup()) {
+			BoardElement element = getBoardElement(position);
+			if(element.owner != queryElement.owner) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		movePlayer(getCurrentPlayer(), rollDice());
+		endTurn();
 	}
 
 }

@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 public class StandardLogic implements Purchasable {
+	public static final int GROUP_OWNERSHIP_COEFFICIENT = 2;
 
 	public final int cost;
 	public final int costPerHouse;
@@ -16,17 +17,13 @@ public class StandardLogic implements Purchasable {
 	public String onLand(Player mover, Main main) {
 		BoardElement destination = main.getBoardElement(mover);
 
-		final String ownerString;
-		if(destination.owner == null)
-			ownerString = "THE BANK";
-		else
-			ownerString = destination.owner.getIcon();
-
 		final int rentAmount;
 		if(destination.owner == null)
 			rentAmount = 0;
 		else if(destination.owner == mover)
 			rentAmount = 0;
+		else if(destination.improvementAmt == 0 && main.isEntireGroupOwned(destination.position))
+			rentAmount = rents[0] * GROUP_OWNERSHIP_COEFFICIENT;
 		else
 			rentAmount = rents[destination.improvementAmt];
 

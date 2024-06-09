@@ -1,6 +1,8 @@
 package xyz.cliserkad.consortium;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import static xyz.cliserkad.consortium.Main.*;
 
@@ -48,7 +50,7 @@ public enum BoardPosition {
 		, new StandardLogic(140, 100, new int[]{ 10, 50, 150, 450, 625, 750 })
 	),
 	ELECTRIC_COMPANY(
-		new Color(255, 255, 255)
+		new Color(134, 134, 134)
 		, new UtilityLogic()
 	),
 	STATES_AVENUE(
@@ -76,10 +78,7 @@ public enum BoardPosition {
 		ST_JAMES_PLACE.color
 		, new StandardLogic(200, 100, new int[]{ 16, 80, 220, 600, 800, 1000 })
 	),
-	FREE_PARKING(
-		Color.WHITE,
-		NoLogic.INSTANCE
-	),
+	FREE_PARKING,
 	KENTUCKY_AVENUE(
 		new Color(0xE50D1E)
 		, new StandardLogic(220, 150, new int[]{ 18, 90, 250, 700, 875, 1050 })
@@ -105,7 +104,10 @@ public enum BoardPosition {
 		ATLANTIC_AVENUE.color
 		, new StandardLogic(260, 150, new int[]{ 22, 110, 330, 800, 975, 1150 })
 	),
-	WATER_WORKS,
+	WATER_WORKS(
+		ELECTRIC_COMPANY.color
+		, new UtilityLogic()
+	),
 	MARVIN_GARDENS(
 		ATLANTIC_AVENUE.color
 		, new StandardLogic(280, 150, new int[]{ 24, 120, 360, 850, 1025, 1200 })
@@ -147,13 +149,23 @@ public enum BoardPosition {
 	public final String niceName;
 
 	BoardPosition() {
-		this(Color.WHITE, new NoLogic());
+		this(Color.WHITE, NoLogic.INSTANCE);
 	}
 
 	BoardPosition(final Color color, final PositionLogic logic) {
 		this.color = color;
 		this.logic = logic;
 		this.niceName = niceName();
+	}
+
+	public List<BoardPosition> colorGroup() {
+		List<BoardPosition> group = new ArrayList<>();
+		for(BoardPosition position : values()) {
+			if(position.color.equals(color)) {
+				group.add(position);
+			}
+		}
+		return group;
 	}
 
 	public BoardPosition next() {
