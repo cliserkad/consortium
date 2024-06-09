@@ -84,7 +84,7 @@ public class Player extends JPanel {
 	public void transferMoney(Player recipient, int amount) {
 		money -= amount;
 		recipient.addMoney(amount);
-		System.out.println(getIcon() + " paid " + recipient.getIcon() + " $" + amount);
+		// System.out.println(getIcon() + " paid " + recipient.getIcon() + " $" + amount);
 	}
 
 	public int getMoney() {

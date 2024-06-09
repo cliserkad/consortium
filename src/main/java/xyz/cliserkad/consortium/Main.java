@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
+
 public class Main {
 	public static final int BOARD_X_SIZE = 11;
 	public static final int BOARD_X_SIZE_LESS_ONE = BOARD_X_SIZE - 1;
@@ -72,27 +74,41 @@ public class Main {
 
 	}
 
-	public void purchasingLogic(Player player, BoardElement element) {
+	public String purchasingLogic(Player player, BoardElement element) {
 		if(element.position.logic instanceof Purchasable purchasable && element.owner == null) {
 			if(player.getMoney() >= purchasable.cost()) {
 				final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to purchase " + element.position.name() + " for $" + purchasable.cost() + "?", "Purchase Property", JOptionPane.YES_NO_OPTION);
 				if(dialogResult == JOptionPane.YES_OPTION) {
 					player.addMoney(-purchasable.cost());
 					element.setOwner(player);
+					return player.getIcon() + " purchased " + element.position.name() + " for $" + purchasable.cost();
 				}
+				return player.getIcon() + " chose not to purchase " + element.position.name();
 			}
+			return player.getIcon() + " could not purchase " + element.position.name() + " due to lack of funds";
 		}
+		return EMPTY_STRING;
 	}
 
 	public void movePlayer(Player player, int spaces) {
 		for(int stepsTaken = 1; stepsTaken < spaces; stepsTaken++) {
 			BoardPosition position = player.getPosition().next(stepsTaken);
 			BoardElement element = getBoardElement(position);
-			element.position.logic.onPass(player, this);
+			printIfContentful(element.position.logic.onPass(player, this));
 		}
 		player.setPosition(player.getPosition().next(spaces), this);
-		player.getPosition().logic.onLand(player, this);
-		purchasingLogic(player, getBoardElement(player));
+		System.out.println(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().name());
+		printIfContentful(player.getPosition().logic.onLand(player, this));
+		printIfContentful(purchasingLogic(player, getBoardElement(player)));
+	}
+
+	public static boolean printIfContentful(String string) {
+		if(string != null && !string.isEmpty() && !string.isBlank()) {
+			System.out.println(string);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void endTurn() {

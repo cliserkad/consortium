@@ -13,33 +13,39 @@ public class StandardLogic implements Purchasable {
 	}
 
 	@Override
-	public void onLand(Player mover, Main main) {
-		BoardElement element = main.getBoardElement(mover);
+	public String onLand(Player mover, Main main) {
+		BoardElement destination = main.getBoardElement(mover);
 
 		final String ownerString;
-		if(element.owner == null)
+		if(destination.owner == null)
 			ownerString = "THE BANK";
 		else
-			ownerString = element.owner.getIcon();
+			ownerString = destination.owner.getIcon();
 
 		final int rentAmount;
-		if(element.owner == null)
+		if(destination.owner == null)
 			rentAmount = 0;
-		else if(element.owner == mover)
+		else if(destination.owner == mover)
 			rentAmount = 0;
 		else
-			rentAmount = rents[element.improvementAmt];
-
-		System.out.println(mover.getIcon() + " owes " + ownerString + " $" + rentAmount + " for landing on " + element.position.name() + ".");
+			rentAmount = rents[destination.improvementAmt];
 
 		if(main.playerOwesRent(mover)) {
-			mover.transferMoney(element.owner, rents[element.improvementAmt]);
+			mover.transferMoney(destination.owner, rentAmount);
 		}
+		return rentPaidString(mover, rentAmount, destination);
 	}
 
-	@Override
-	public void onPass(Player mover, Main main) {
-
+	public static String rentPaidString(Player mover, int rentAmount, BoardElement destination) {
+		final String ownerString;
+		if(destination.owner == null)
+			ownerString = "THE BANK";
+		else
+			ownerString = destination.owner.getIcon();
+		if(rentAmount > 0)
+			return mover.getIcon() + " rented from " + ownerString + " for $" + rentAmount;
+		else
+			return EMPTY_STRING;
 	}
 
 	@Override

@@ -1,10 +1,15 @@
 package xyz.cliserkad.consortium;
 
 public interface PositionLogic {
+	public static final String EMPTY_STRING = "";
 
-	void onLand(Player mover, Main main);
+	default String onLand(Player mover, Main main) {
+		return EMPTY_STRING;
+	}
 
-	void onPass(Player mover, Main main);
+	default String onPass(Player mover, Main main) {
+		return EMPTY_STRING;
+	}
 
 	default boolean isPurchasable() {
 		return this instanceof Purchasable;
