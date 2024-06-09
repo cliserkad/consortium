@@ -2,11 +2,7 @@ package xyz.cliserkad.consortium;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
@@ -72,7 +68,10 @@ public class Main {
 		players = new Player[playerCount];
 		constraints.gridy = 6;
 		for(int i = 0; i < playerCount; i++) {
-			players[i] = new Player();
+			if(i == 0)
+				players[i] = new Player(new GraphicalPlayerController());
+			else
+				players[i] = new Player(new AutoPlayerController());
 			constraints.gridx = 3 + i;
 			panel.add(players[i], constraints);
 			players[i].setPosition(BoardPosition.GO, this);
@@ -95,13 +94,15 @@ public class Main {
 	public String purchasingLogic(Player player, BoardElement element) {
 		if(element.position.logic instanceof Purchasable purchasable && element.owner == null) {
 			if(player.getMoney() >= purchasable.cost()) {
-				final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to purchase " + element.position.niceName + " for $" + purchasable.cost() + "?", "Purchase Property", JOptionPane.YES_NO_OPTION);
-				if(dialogResult == JOptionPane.YES_OPTION) {
-					player.addMoney(-purchasable.cost());
-					element.setOwner(player);
-					return player.getIcon() + " purchased " + element.position.niceName + " for $" + purchasable.cost();
+				PlayerAction response = player.controller.poll(player, this, new Class[]{ PurchaseAction.class });
+				if(response instanceof PurchaseAction purchaseAction) {
+					if(purchaseAction.position() == element.position) {
+						player.addMoney(-purchasable.cost());
+						element.setOwner(player);
+						return player.getIcon() + " purchased " + element.position.niceName + " for $" + purchasable.cost();
+					}
+					return player.getIcon() + " chose not to purchase " + element.position.niceName;
 				}
-				return player.getIcon() + " chose not to purchase " + element.position.niceName;
 			}
 			return player.getIcon() + " could not purchase " + element.position.niceName + " due to lack of funds";
 		}

@@ -15,13 +15,16 @@ public class Player extends JPanel {
 	private BoardPosition position;
 
 	private final JLabel moneyDisplay;
+	public final PlayerController controller;
 
-	public Player() {
+
+	public Player(PlayerController controller) {
 		super(new GridBagLayout());
 
 		position = BoardPosition.GO;
 		money = 1800;
 		playerIndex = numPlayers++;
+		this.controller = controller;
 
 		setBorder(BorderFactory.createLineBorder(Color.black));
 
