@@ -13,7 +13,6 @@ public class Player extends JPanel {
 	private int money;
 	public final int playerIndex;
 	private BoardPosition position;
-	private List<BoardPosition> propertiesOwned;
 
 	private final JLabel moneyDisplay;
 
@@ -21,7 +20,6 @@ public class Player extends JPanel {
 		super(new GridBagLayout());
 
 		position = BoardPosition.GO;
-		propertiesOwned = new ArrayList<>();
 		money = 1800;
 		playerIndex = numPlayers++;
 
@@ -37,23 +35,25 @@ public class Player extends JPanel {
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 
-		JLabel playerIDDisplay = new JLabel("Player: " + playerIndex);
+		JLabel playerIDDisplay = new JLabel("░  " + getIcon() + "  ░");
 		playerIDDisplay.setForeground(Color.BLACK);
 		playerIDDisplay.setBackground(Color.WHITE);
 		playerIDDisplay.setOpaque(true);
+		playerIDDisplay.setHorizontalTextPosition(SwingConstants.CENTER);
 		add(playerIDDisplay, constraints);
 
 		constraints.gridy = 1;
-		moneyDisplay = new JLabel("Money: " + getMoney());
-		moneyDisplay.setForeground(Color.BLACK);
+		moneyDisplay = new JLabel("$" + getMoney());
+		moneyDisplay.setForeground(Color.GREEN);
 		moneyDisplay.setBackground(Color.WHITE);
 		moneyDisplay.setOpaque(true);
+		playerIDDisplay.setHorizontalTextPosition(SwingConstants.CENTER);
 		add(moneyDisplay, constraints);
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
-		moneyDisplay.setText("Money: " + getMoney());
+		moneyDisplay.setText("$ " + getMoney());
 		super.paintComponent(g);
 	}
 
@@ -79,6 +79,12 @@ public class Player extends JPanel {
 			}
 		}
 		repaint();
+	}
+
+	public void transferMoney(Player recipient, int amount) {
+		money -= amount;
+		recipient.addMoney(amount);
+		System.out.println(getIcon() + " paid " + recipient.getIcon() + " $" + amount);
 	}
 
 	public int getMoney() {
