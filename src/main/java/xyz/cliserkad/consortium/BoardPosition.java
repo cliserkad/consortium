@@ -25,7 +25,10 @@ public enum BoardPosition {
 		Color.WHITE,
 		TaxLogic.INCOME_TAX
 	),
-	READING_RAILROAD(),
+	READING_RAILROAD(
+		Color.BLACK,
+		new RailRoadLogic()
+	),
 	ORIENTAL_AVENUE(
 		new Color(0xB2FFE8)
 		, new StandardLogic(100, 50, new int[] {6, 30, 90, 270, 400, 550 })

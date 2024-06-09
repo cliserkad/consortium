@@ -19,13 +19,15 @@ public class Main {
 
 	public static final Random RANDOM = new Random();
 
+	private final JFrame frame;
+
 	private Player[] players;
 	private BoardElement[] boardElements;
 	private int lastRoll = 0;
 	private int currentPlayer = 0;
 
 	public Main(final int playerCount) {
-		JFrame frame = new JFrame(WINDOW_TITLE);
+		frame = new JFrame(WINDOW_TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(1920, 1080);
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -59,9 +61,6 @@ public class Main {
 		JButton button = new JButton("CLICK TO ADVANCE");
 		button.addActionListener(actionEvent -> {
 			movePlayer(getCurrentPlayer(), rollDice());
-			if(getBoardElement(getCurrentPlayer()).owner == null) {
-				getBoardElement(getCurrentPlayer()).setOwner(getCurrentPlayer());
-			}
 			endTurn();
 		});
 		constraints.gridy = 6;
@@ -73,6 +72,18 @@ public class Main {
 
 	}
 
+	public void purchasingLogic(Player player, BoardElement element) {
+		if(element.position.logic instanceof Purchasable purchasable && element.owner == null) {
+			if(player.getMoney() >= purchasable.cost()) {
+				final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to purchase " + element.position.name() + " for $" + purchasable.cost() + "?", "Purchase Property", JOptionPane.YES_NO_OPTION);
+				if(dialogResult == JOptionPane.YES_OPTION) {
+					player.addMoney(-purchasable.cost());
+					element.setOwner(player);
+				}
+			}
+		}
+	}
+
 	public void movePlayer(Player player, int spaces) {
 		for(int stepsTaken = 1; stepsTaken < spaces; stepsTaken++) {
 			BoardPosition position = player.getPosition().next(stepsTaken);
@@ -81,6 +92,7 @@ public class Main {
 		}
 		player.setPosition(player.getPosition().next(spaces), this);
 		player.getPosition().logic.onLand(player, this);
+		purchasingLogic(player, getBoardElement(player));
 	}
 
 	public void endTurn() {
