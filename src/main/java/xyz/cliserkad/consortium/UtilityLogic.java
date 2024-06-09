@@ -4,8 +4,9 @@ public class UtilityLogic implements Purchasable {
 	public static final int[] FACTORS = { 4, 10 };
 
 	@Override
-	public void onLand(Player mover, Main main) {
+	public String onLand(Player mover, Main main) {
 		BoardElement element = main.getBoardElement(mover);
+		final int rentToPay;
 		if(main.playerOwesRent(mover)) {
 			final int factor;
 			if(main.getBoardElement(BoardPosition.ELECTRIC_COMPANY).owner == main.getBoardElement(BoardPosition.WATER_WORKS).owner) {
@@ -13,13 +14,12 @@ public class UtilityLogic implements Purchasable {
 			} else {
 				factor = FACTORS[0];
 			}
-			mover.transferMoney(element.owner, factor * main.getLastRoll());
+			rentToPay = factor * main.getLastRoll();
+			mover.transferMoney(element.owner, rentToPay);
+		} else {
+			rentToPay = 0;
 		}
-	}
-
-	@Override
-	public void onPass(Player mover, Main main) {
-
+		return StandardLogic.rentPaidString(mover, rentToPay, element);
 	}
 
 	@Override
