@@ -15,10 +15,26 @@ public class StandardLogic implements Purchasable {
 	@Override
 	public void onLand(Player mover, Main main) {
 		BoardElement element = main.getBoardElement(mover);
-		if(main.playerOwesRent(mover))
-			mover.transferMoney(element.owner, rents[element.improvementAmt]);
+
+		final String ownerString;
+		if(element.owner == null)
+			ownerString = "THE BANK";
 		else
-			System.out.println("You don't owe rent.");
+			ownerString = element.owner.getIcon();
+
+		final int rentAmount;
+		if(element.owner == null)
+			rentAmount = 0;
+		else if(element.owner == mover)
+			rentAmount = 0;
+		else
+			rentAmount = rents[element.improvementAmt];
+
+		System.out.println(mover.getIcon() + " owes " + ownerString + " $" + rentAmount + " for landing on " + element.position.name() + ".");
+
+		if(main.playerOwesRent(mover)) {
+			mover.transferMoney(element.owner, rents[element.improvementAmt]);
+		}
 	}
 
 	@Override
