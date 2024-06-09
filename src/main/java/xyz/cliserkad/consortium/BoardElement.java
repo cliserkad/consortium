@@ -51,6 +51,9 @@ public class BoardElement extends JPanel {
 		}
 	}
 
+	/**
+	 * Sets the owner of this BoardElement
+	 */
 	public boolean setOwner(Player player) {
 		if(position.isPurchasable()) {
 			owner = player;
@@ -62,6 +65,9 @@ public class BoardElement extends JPanel {
 		return position.isPurchasable();
 	}
 
+	/**
+	 * Adds player to this BoardElement for rendering purposes
+	 */
 	public void addPlayer(Player player, Main main) {
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridwidth = 1;
@@ -69,7 +75,7 @@ public class BoardElement extends JPanel {
 		constraints.fill = GridBagConstraints.NONE;
 		constraints.anchor = GridBagConstraints.SOUTH;
 
-		position.logic.onLand(player, main);
+
 
 		constraints.gridx = player.playerIndex;
 		constraints.gridy = 4;
@@ -80,6 +86,9 @@ public class BoardElement extends JPanel {
 		repaint();
 	}
 
+	/**
+	 * Removes player from this BoardElement for rendering purposes
+	 */
 	public void removePlayer(Player player) {
 		setBackground(position.color);
 		remove(player);

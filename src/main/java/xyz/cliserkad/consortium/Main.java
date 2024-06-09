@@ -13,13 +13,16 @@ public class Main {
 	public static final int BOARD_X_SIZE_LESS_ONE = BOARD_X_SIZE - 1;
 	public static final int BOARD_Y_SIZE = 11;
 	public static final int BOARD_Y_SIZE_LESS_ONE = BOARD_Y_SIZE - 1;
+	public static final int DICE_MAX = 12;
+	public static final int DICE_MIN = 2;
 	public static final String WINDOW_TITLE = "Consortium";
 
 	public static final Random RANDOM = new Random();
 
-
-	private List<Player> players;
-	private List<BoardElement> boardElements;
+	private Player[] players;
+	private BoardElement[] boardElements;
+	private int lastRoll = 0;
+	private int currentPlayer = 0;
 
 	public Main(final int playerCount) {
 		JFrame frame = new JFrame(WINDOW_TITLE);
@@ -34,26 +37,32 @@ public class Main {
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 
-		boardElements = new ArrayList<>();
-		for(BoardPosition position : BoardPosition.values()) {
+		boardElements = new BoardElement[BoardPosition.values().length];
+		for(int i = 0; i < BoardPosition.values().length; i++) {
+			final BoardPosition position = BoardPosition.values()[i];
 			constraints.gridx = position.getBoardCoords().x;
 			constraints.gridy = position.getBoardCoords().y;
 			final BoardElement boardElement = new BoardElement(position);
-			boardElements.add(boardElement);
+			boardElements[i] = boardElement;
 			panel.add(boardElement, constraints);
 		}
 
-		players = new ArrayList<>();
+		players = new Player[playerCount];
 		constraints.gridy = 5;
 		for(int i = 0; i < playerCount; i++) {
-			players.add(new Player());
+			players[i] = new Player();
 			constraints.gridx = 3 + i;
-			panel.add(players.get(i), constraints);
+			panel.add(players[i], constraints);
+			players[i].setPosition(BoardPosition.GO, this);
 		}
 
 		JButton button = new JButton("CLICK TO ADVANCE");
 		button.addActionListener(actionEvent -> {
-			players.get(0).setPosition(players.get(0).getPosition().next(), this);
+			movePlayer(getCurrentPlayer(), rollDice());
+			if(getBoardElement(getCurrentPlayer()).owner == null) {
+				getBoardElement(getCurrentPlayer()).setOwner(getCurrentPlayer());
+			}
+			endTurn();
 		});
 		constraints.gridy = 6;
 		constraints.gridx = 3;
@@ -64,12 +73,53 @@ public class Main {
 
 	}
 
-	public List<BoardElement> getBoardElements() {
+	public void movePlayer(Player player, int spaces) {
+		for(int stepsTaken = 1; stepsTaken < spaces; stepsTaken++) {
+			BoardPosition position = player.getPosition().next(stepsTaken);
+			BoardElement element = getBoardElement(position);
+			element.position.logic.onPass(player, this);
+		}
+		player.setPosition(player.getPosition().next(spaces), this);
+		player.getPosition().logic.onLand(player, this);
+	}
+
+	public void endTurn() {
+		currentPlayer = (currentPlayer + 1) % players.length;
+	}
+
+	public boolean playerOwesRent(Player player) {
+		BoardElement element = getBoardElement(player);
+		return element.owner != null && element.owner != player && element.improvementAmt >= 0;
+	}
+
+	public Player getCurrentPlayer() {
+		return players[currentPlayer];
+	}
+
+	public BoardElement getBoardElement(Player player) {
+		return getBoardElement(player.getPosition());
+	}
+
+	public BoardElement getBoardElement(BoardPosition position) {
+		return boardElements[position.ordinal()];
+	}
+
+	public int rollDice() {
+		final int out =  RANDOM.nextInt(DICE_MAX - 1) + DICE_MIN;
+		lastRoll = out;
+		return out;
+	}
+
+	public int getLastRoll() {
+		return lastRoll;
+	}
+
+	public BoardElement[] getBoardElements() {
 		return boardElements;
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		new Main(1);
+		new Main(4);
 	}
 
 }

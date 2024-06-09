@@ -8,7 +8,10 @@ import static xyz.cliserkad.consortium.Main.*;
  * Represents the static data for each position on the board
  */
 public enum BoardPosition {
-	GO,
+	GO(
+		Color.WHITE,
+		new GoLogic()
+	),
 	MEDITERRANEAN_AVENUE(
 		  new Color(0x8B4513)
 		, new StandardLogic(60, 50, new int[]{ 2, 10, 30, 90, 160, 250 })
@@ -18,7 +21,10 @@ public enum BoardPosition {
 		MEDITERRANEAN_AVENUE.color
 		, new StandardLogic(60, 50, new int[]{ 4, 20, 60, 180, 320, 450 })
 	),
-	INCOME_TAX,
+	INCOME_TAX(
+		Color.WHITE,
+		TaxLogic.INCOME_TAX
+	),
 	READING_RAILROAD(),
 	ORIENTAL_AVENUE(
 		new Color(0xB2FFE8)
@@ -124,7 +130,10 @@ public enum BoardPosition {
 		new Color(0x1D1DE8)
 		, new StandardLogic(350, 200, new int[]{ 35, 175, 500, 1100, 1300, 1500 })
 	),
-	LUXURY_TAX,
+	LUXURY_TAX(
+		Color.WHITE,
+		TaxLogic.LUXURY_TAX
+	),
 	BOARDWALK(
 		PARK_PLACE.color
 		, new StandardLogic(400, 200, new int[]{ 50, 200, 600, 1400, 1700, 2000 })
@@ -143,10 +152,11 @@ public enum BoardPosition {
 	}
 
 	public BoardPosition next() {
-		if(ordinal() == values().length - 1) {
-			return values()[0];
-		}
-		return BoardPosition.values()[ordinal() + 1];
+		return next(1);
+	}
+
+	public BoardPosition next(int steps) {
+		return values()[(ordinal() + steps) % values().length];
 	}
 
 	public boolean isPurchasable() {
