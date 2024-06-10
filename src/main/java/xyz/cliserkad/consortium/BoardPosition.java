@@ -18,7 +18,10 @@ public enum BoardPosition {
 		  new Color(0x8B4513)
 		, new StandardLogic(60, 50, new int[]{ 2, 10, 30, 90, 160, 250 })
 	),
-	COMMUNITY_CHEST_1(),
+	COMMUNITY_CHEST_1(
+		Color.WHITE,
+		CommunityChestLogic.INSTANCE
+	),
 	BALTIC_AVENUE(
 		MEDITERRANEAN_AVENUE.color
 		, new StandardLogic(60, 50, new int[]{ 4, 20, 60, 180, 320, 450 })
@@ -35,7 +38,10 @@ public enum BoardPosition {
 		new Color(0xB2FFE8)
 		, new StandardLogic(100, 50, new int[] {6, 30, 90, 270, 400, 550 })
 	),
-	CHANCE_1,
+	CHANCE_1(
+		Color.WHITE,
+		ChanceLogic.INSTANCE
+	),
 	VERMONT_AVENUE(
 		ORIENTAL_AVENUE.color
 		, new StandardLogic(100, 50, new int[]{ 6, 30, 90, 270, 400, 550 })
@@ -69,7 +75,10 @@ public enum BoardPosition {
 		new Color(0xC95C14)
 		, new StandardLogic(180, 100, new int[]{ 14, 70, 200, 550, 750, 950 })
 	),
-	COMMUNITY_CHEST_2,
+	COMMUNITY_CHEST_2(
+		Color.WHITE,
+		CommunityChestLogic.INSTANCE
+	),
 	TENNESSEE_AVENUE(
 		ST_JAMES_PLACE.color
 		, new StandardLogic(180, 100, new int[]{ 14, 70, 200, 550, 750, 950 })
@@ -83,7 +92,10 @@ public enum BoardPosition {
 		new Color(0xE50D1E)
 		, new StandardLogic(220, 150, new int[]{ 18, 90, 250, 700, 875, 1050 })
 	),
-	CHANCE_2,
+	CHANCE_2(
+		Color.WHITE,
+		ChanceLogic.INSTANCE
+	),
 	INDIANA_AVENUE(
 		KENTUCKY_AVENUE.color
 		, new StandardLogic(220, 150, new int[]{ 18, 90, 250, 700, 875, 1050 })
@@ -121,7 +133,10 @@ public enum BoardPosition {
 		PACIFIC_AVENUE.color
 		, new StandardLogic(300, 200, new int[]{ 26, 130, 390, 900, 1100, 1275 })
 	),
-	COMMUNITY_CHEST_3,
+	COMMUNITY_CHEST_3(
+		Color.WHITE,
+		CommunityChestLogic.INSTANCE
+	),
 	PENSNSYLVANIA_AVENUE(
 		PACIFIC_AVENUE.color
 		, new StandardLogic(320, 200, new int[]{ 28, 150, 450, 1000, 1200, 1400 })
@@ -130,7 +145,10 @@ public enum BoardPosition {
 		READING_RAILROAD.color
 		, new RailRoadLogic()
 	),
-	CHANCE_3,
+	CHANCE_3(
+		Color.WHITE,
+		ChanceLogic.INSTANCE
+	),
 	PARK_PLACE(
 		new Color(0x1D1DE8)
 		, new StandardLogic(350, 200, new int[]{ 35, 175, 500, 1100, 1300, 1500 })
@@ -166,6 +184,18 @@ public enum BoardPosition {
 			}
 		}
 		return group;
+	}
+
+	public int findAbsDistanceTo(BoardPosition target) {
+		for(int steps = 0; steps < values().length; steps++) {
+			if(next(steps) == target) {
+				return steps;
+			}
+			if(next(-steps) == target) {
+				return steps;
+			}
+		}
+		throw new IllegalArgumentException("Target not found");
 	}
 
 	public BoardPosition next() {

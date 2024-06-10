@@ -5,7 +5,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
+import java.util.List;
 
 import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
 
@@ -22,6 +25,12 @@ public class Main implements ActionListener {
 	public static final Random RANDOM = new Random();
 
 	private final JFrame frame;
+	private final int[] communityCardStack = genShuffledArray(CommunityChestLogic.CommunityCard.values().length);
+	private final int[] chanceCardStack = genShuffledArray(16);
+	private int communityCardIndex = 0;
+	private int chanceCardIndex = 0;
+
+
 
 	private Player[] players;
 	private BoardElement[] boardElements;
@@ -83,12 +92,53 @@ public class Main implements ActionListener {
 		frame.add(panel);
 		frame.setVisible(true);
 
+		for(int i : communityCardStack) {
+			System.out.println(i);
+		}
+		for(int i : chanceCardStack) {
+			System.out.println(i);
+		}
+
 		// Game loop
-		Timer timer=new Timer(2000, this);
+		Timer timer = new Timer(3500, this);
 		timer.setRepeats(true);
 		timer.setInitialDelay(5000);
 		timer.setActionCommand(PROMPT_TURN);
 		timer.start();
+	}
+
+	/**
+	 * in place shuffle of an array of integers
+	 */
+	public static int[] genShuffledArray(int length)
+	{
+		// Creating an array of integers
+		Integer[] numbers = new Integer[length];
+		for(int i = 0; i < length; i++)
+			numbers[i] = i;
+
+		// Converting the array to a list
+		List<Integer> numberList = Arrays.asList(numbers);
+
+		// Shuffling the list
+		Collections.shuffle(numberList);
+
+		// Converting the list back to an array
+		Integer[] shuffledNumbers = numberList.toArray(new Integer[length]);
+
+		int[] output = new int[length];
+		for(int i = 0; i < length; i++)
+			output[i] = shuffledNumbers[i];
+
+		return output;
+	}
+
+	public int nextCommunityCard() {
+		return communityCardStack[communityCardIndex++ % communityCardStack.length];
+	}
+
+	public int nextChanceCard() {
+		return chanceCardStack[chanceCardIndex++ % chanceCardStack.length];
 	}
 
 	public String purchasingLogic(Player player, BoardElement element) {
@@ -100,25 +150,35 @@ public class Main implements ActionListener {
 						player.addMoney(-purchasable.cost());
 						element.setOwner(player);
 						return player.getIcon() + " purchased " + element.position.niceName + " for $" + purchasable.cost();
+					} else {
+						return player.getIcon() + " chose not to purchase " + element.position.niceName + ". PlayerController may have returned an incorrect position";
 					}
-					return player.getIcon() + " chose not to purchase " + element.position.niceName;
 				}
+				return player.getIcon() + " chose not to purchase " + element.position.niceName;
 			}
 			return player.getIcon() + " could not purchase " + element.position.niceName + " due to lack of funds";
 		}
 		return EMPTY_STRING;
 	}
 
-	public void movePlayer(Player player, int spaces) {
-		for(int stepsTaken = 1; stepsTaken < spaces; stepsTaken++) {
-			BoardPosition position = player.getPosition().next(stepsTaken);
-			BoardElement element = getBoardElement(position);
-			printIfContentful(element.position.logic.onPass(player, this));
+	public boolean movePlayer(Player player, int spaces) {
+		return movePlayer(player, player.getPosition().next(spaces), spaces);
+	}
+
+	public boolean movePlayer(Player player, BoardPosition destination, int spaces) {
+		player.setPosition(player.getPosition().next(), this);
+		while(player.getPosition() != destination) {
+			printIfContentful(player.getPosition().logic.onPass(player, this));
+			player.setPosition(player.getPosition().next(), this);
 		}
-		player.setPosition(player.getPosition().next(spaces), this);
-		System.out.println(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().niceName);
+		if(spaces > 0) {
+			System.out.println(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().niceName);
+		} else {
+			System.out.println(player.getIcon() + " landed on " + player.getPosition().niceName);
+		}
 		printIfContentful(player.getPosition().logic.onLand(player, this));
 		printIfContentful(purchasingLogic(player, getBoardElement(player)));
+		return true;
 	}
 
 	public static boolean printIfContentful(String string) {
@@ -163,6 +223,10 @@ public class Main implements ActionListener {
 
 	public BoardElement[] getBoardElements() {
 		return boardElements;
+	}
+
+	public Player[] getPlayers() {
+		return players;
 	}
 
 	public static void main(String[] args) throws InterruptedException {
