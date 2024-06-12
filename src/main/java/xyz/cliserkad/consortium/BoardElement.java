@@ -69,7 +69,7 @@ public class BoardElement extends JPanel {
 	/**
 	 * Adds player to this BoardElement for rendering purposes
 	 */
-	public void addPlayer(Player player, Main main) {
+	public void addPlayer(Player player) {
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridwidth = 1;
 		constraints.gridheight = 1;

@@ -2,8 +2,6 @@ package xyz.cliserkad.consortium;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Player extends JPanel {
 	public static final String[] PLAYER_ICONS = { "🎩", "🐈", "💰", "👽" };
@@ -67,17 +65,17 @@ public class Player extends JPanel {
 	/**
 	 * Sets the player's position on the board and updates the board elements
 	 */
-	public void setPosition(BoardPosition position, Main main) {
-		for(BoardElement element : main.getBoardElements()) {
+	public void setPosition(BoardPosition position, GameState gameState) {
+		for(BoardElement element : gameState.getBoardElements()) {
 			if(element.position == this.position) {
 				element.removePlayer(this);
 				element.repaint();
 			}
 		}
 		this.position = position;
-		for(BoardElement element : main.getBoardElements()) {
+		for(BoardElement element : gameState.getBoardElements()) {
 			if(element.position == position) {
-				element.addPlayer(this, main);
+				element.addPlayer(this);
 				element.repaint();
 			}
 		}

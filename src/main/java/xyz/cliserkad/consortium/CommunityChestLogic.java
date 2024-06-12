@@ -23,19 +23,19 @@ public class CommunityChestLogic implements PositionLogic {
 	}
 
 	@Override
-	public String onLand(Player player, Main main) {
-		CommunityCard pulledCard = CommunityCard.values()[main.nextCommunityCard()];
+	public String onLand(Player player, GameState gameState) {
+		CommunityCard pulledCard = CommunityCard.values()[gameState.nextCommunityCard()];
 		switch(pulledCard) {
-			case ADVANCE_TO_GO -> main.movePlayer(player, BoardPosition.GO, 0);
+			case ADVANCE_TO_GO -> gameState.movePlayer(player, BoardPosition.GO, 0);
 			case BANK_ERROR -> player.addMoney(200);
 			case DOCTOR_FEE, SCHOOL_TAX -> player.addMoney(-50);
 			case STOCK_DIVIDEND -> player.addMoney(50);
 			case GET_OUT_OF_JAIL -> System.out.println("Nah, you're stuck in jail.");
-			case GO_TO_JAIL -> main.movePlayer(player, BoardPosition.JAIL, 0);
+			case GO_TO_JAIL -> gameState.movePlayer(player, BoardPosition.JAIL, 0);
 			case HOLIDAY_FUND, LIFE_INSURANCE, INHERITANCE -> player.addMoney(100);
 			case INCOME_TAX_REFUND -> player.addMoney(20);
 			case BIRTHDAY_PARTY -> {
-				for(Player otherPlayer : main.getPlayers()) {
+				for(Player otherPlayer : gameState.getPlayers()) {
 					if(otherPlayer != player) {
 						otherPlayer.transferMoney(player, 10);
 					}

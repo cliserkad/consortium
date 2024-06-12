@@ -14,20 +14,20 @@ public class StandardLogic implements Purchasable {
 	}
 
 	@Override
-	public String onLand(Player mover, Main main) {
-		BoardElement destination = main.getBoardElement(mover);
+	public String onLand(Player mover, GameState gameState) {
+		BoardElement destination = gameState.getBoardElement(mover);
 
 		final int rentAmount;
 		if(destination.owner == null)
 			rentAmount = 0;
 		else if(destination.owner == mover)
 			rentAmount = 0;
-		else if(destination.improvementAmt == 0 && main.isEntireGroupOwned(destination.position))
+		else if(destination.improvementAmt == 0 && gameState.isEntireGroupOwned(destination.position))
 			rentAmount = rents[0] * GROUP_OWNERSHIP_COEFFICIENT;
 		else
 			rentAmount = rents[destination.improvementAmt];
 
-		if(main.playerOwesRent(mover)) {
+		if(gameState.playerOwesRent(mover)) {
 			mover.transferMoney(destination.owner, rentAmount);
 		}
 		return rentPaidString(mover, rentAmount, destination);

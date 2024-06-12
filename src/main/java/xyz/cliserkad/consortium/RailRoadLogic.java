@@ -5,11 +5,11 @@ public class RailRoadLogic implements Purchasable {
 	public static final int RAILROAD_COST = 200;
 
 	@Override
-	public String onLand(Player mover, Main main) {
-		BoardElement destination = main.getBoardElement(mover);
+	public String onLand(Player mover, GameState gameState) {
+		BoardElement destination = gameState.getBoardElement(mover);
 		int railroadsOwned = 0;
-		if(main.playerOwesRent(mover)) {
-			for(BoardElement element : main.getBoardElements()) {
+		if(gameState.playerOwesRent(mover)) {
+			for(BoardElement element : gameState.getBoardElements()) {
 				if(element.owner == destination.owner && element.position.logic instanceof RailRoadLogic) {
 					railroadsOwned++;
 				}

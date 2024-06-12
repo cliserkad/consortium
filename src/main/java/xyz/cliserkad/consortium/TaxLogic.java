@@ -14,7 +14,7 @@ public class TaxLogic implements PositionLogic {
 	}
 
 	@Override
-	public String onLand(Player mover, Main main) {
+	public String onLand(Player mover, GameState gameState) {
 		mover.addMoney(amount);
 		return mover.getIcon() + " paid $" + -amount + " in taxes";
 	}

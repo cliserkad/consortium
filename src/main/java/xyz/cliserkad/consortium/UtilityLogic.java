@@ -4,17 +4,17 @@ public class UtilityLogic implements Purchasable {
 	public static final int[] FACTORS = { 4, 10 };
 
 	@Override
-	public String onLand(Player mover, Main main) {
-		BoardElement element = main.getBoardElement(mover);
+	public String onLand(Player mover, GameState gameState) {
+		BoardElement element = gameState.getBoardElement(mover);
 		final int rentToPay;
-		if(main.playerOwesRent(mover)) {
+		if(gameState.playerOwesRent(mover)) {
 			final int factor;
-			if(main.getBoardElement(BoardPosition.ELECTRIC_COMPANY).owner == main.getBoardElement(BoardPosition.WATER_WORKS).owner) {
+			if(gameState.getBoardElement(BoardPosition.ELECTRIC_COMPANY).owner == gameState.getBoardElement(BoardPosition.WATER_WORKS).owner) {
 				factor = FACTORS[1];
 			} else {
 				factor = FACTORS[0];
 			}
-			rentToPay = factor * main.getLastRoll();
+			rentToPay = factor * gameState.getLastRoll();
 			mover.transferMoney(element.owner, rentToPay);
 		} else {
 			rentToPay = 0;
