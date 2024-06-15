@@ -52,6 +52,7 @@ public class NetworkClient implements GameClient {
 		} catch (final IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		graphicalGameClient.kill();
 	}
 
 	@Override

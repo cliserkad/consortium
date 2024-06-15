@@ -46,6 +46,12 @@ public class GraphicalGameClient implements GameClient {
 		frame.setVisible(true);
 	}
 
+	public void kill() {
+		frame.setVisible(false);
+		frame.dispose();
+		System.exit(1);
+	}
+
 	@Override
 	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction>[] prompts) {
 		update(gameState);

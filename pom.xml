@@ -33,7 +33,7 @@
 						<configuration>
 							<archive>
 								<manifest>
-									<mainClass>xyz.cliserkad.consortium.Main</mainClass>
+									<mainClass>xyz.cliserkad.consortium.NetworkClient</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>
