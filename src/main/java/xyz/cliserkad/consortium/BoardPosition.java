@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import static xyz.cliserkad.consortium.Main.*;
 /**
  * Represents the static data for each position on the board
  */
-public enum BoardPosition {
+public enum BoardPosition implements Serializable {
 	GO(
 		Color.WHITE,
 		new GoLogic()
@@ -161,6 +162,8 @@ public enum BoardPosition {
 		PARK_PLACE.color
 		, new StandardLogic(400, 200, new int[]{ 50, 200, 600, 1400, 1700, 2000 })
 	);
+
+	private static final long serialVersionUID = 20240615L;
 
 	public final Color color;
 	public final PositionLogic logic;

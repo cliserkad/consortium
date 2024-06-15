@@ -1,5 +1,8 @@
 package xyz.cliserkad.consortium;
 
+import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,9 +13,9 @@ import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
 /**
  * Represents the state of the game, and contains logic for editing that state
  */
-public class GameState {
-	private final int[] communityCardStack = genShuffledArray(CommunityChestLogic.CommunityCard.values().length);
-	private final int[] chanceCardStack = genShuffledArray(ChanceLogic.ChanceCard.values().length);
+public class GameState implements Serializable {
+	private final transient int[] communityCardStack = genShuffledArray(CommunityChestLogic.CommunityCard.values().length);
+	private final transient int[] chanceCardStack = genShuffledArray(ChanceLogic.ChanceCard.values().length);
 	private int communityCardIndex = 0;
 	private int chanceCardIndex = 0;
 	private Player[] players;
@@ -20,7 +23,10 @@ public class GameState {
 	private int lastRoll = 0;
 	private int currentPlayer = 0;
 
-	public GameState(final int playerCount) {
+	@Serial
+	private static final long serialVersionUID = 20240615L;
+
+	public GameState(Player[] players) {
 		boardElements = new BoardElement[BoardPosition.values().length];
 		for(int i = 0; i < BoardPosition.values().length; i++) {
 			final BoardPosition position = BoardPosition.values()[i];
@@ -28,13 +34,16 @@ public class GameState {
 			boardElements[i] = boardElement;
 		}
 
-		players = new Player[playerCount];
-		for(int i = 0; i < playerCount; i++) {
-			if(i == 0)
-				players[i] = new Player(new GraphicalPlayerController());
-			else
-				players[i] = new Player(new AutoPlayerController());
-			players[i].setPosition(BoardPosition.GO, this);
+		this.players = players;
+
+		for(Player player : this.players) {
+			player.setPosition(BoardPosition.GO, this);
+		}
+	}
+
+	public void updatePlayers() {
+		for(Player player : players) {
+			player.controller.update(this);
 		}
 	}
 
@@ -62,12 +71,15 @@ public class GameState {
 			player.setPosition(player.getPosition().next(), this);
 		}
 		if(spaces > 0) {
-			System.out.println(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().niceName);
+			printIfContentful(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().niceName);
 		} else {
-			System.out.println(player.getIcon() + " landed on " + player.getPosition().niceName);
+			printIfContentful(player.getIcon() + " landed on " + player.getPosition().niceName);
 		}
 		printIfContentful(player.getPosition().logic.onLand(player, this));
-		printIfContentful(purchasingLogic(player, getBoardElement(player)));
+		updatePlayers();
+		if(printIfContentful(purchasingLogic(player, getBoardElement(player)))) {
+			updatePlayers();
+		}
 		return true;
 	}
 
@@ -81,7 +93,7 @@ public class GameState {
 						element.setOwner(player);
 						return player.getIcon() + " purchased " + element.position.niceName + " for $" + purchasable.cost();
 					} else {
-						return player.getIcon() + " chose not to purchase " + element.position.niceName + ". PlayerController may have returned an incorrect position";
+						return player.getIcon() + " chose not to purchase " + element.position.niceName + ". GameClient may have returned an incorrect position";
 					}
 				}
 				return player.getIcon() + " chose not to purchase " + element.position.niceName;
@@ -91,9 +103,12 @@ public class GameState {
 		return EMPTY_STRING;
 	}
 
-	public static boolean printIfContentful(String string) {
+	public boolean printIfContentful(String string) {
 		if(string != null && !string.isEmpty() && !string.isBlank()) {
 			System.out.println(string);
+			for(Player player : players) {
+				player.controller.sendMessage(string);
+			}
 			return true;
 		} else {
 			return false;
