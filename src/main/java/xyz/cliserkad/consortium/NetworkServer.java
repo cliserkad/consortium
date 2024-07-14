@@ -8,15 +8,18 @@ import java.net.Socket;
 import java.util.List;
 
 public class NetworkServer extends Thread implements GameClient {
+	public static final int BASE_PORT = 5555;
 
 	private ServerSocket socket;
 	private Socket clientSocket;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
+	private final int playerID;
 
 
-	public NetworkServer(final int port) throws IOException {
-		this.socket = new ServerSocket(port);
+	public NetworkServer(int playerID) throws IOException {
+		this.socket = new ServerSocket(BASE_PORT + playerID);
+		this.playerID = playerID;
 	}
 
 	@Override
@@ -32,11 +35,13 @@ public class NetworkServer extends Thread implements GameClient {
 	@Override
 	public void start() {
 		try {
-			System.err.println("SERVER Server started and listening on port " + socket.getLocalPort());
+			System.out.println("SERVER Server started and listening on port " + socket.getLocalPort());
 			final Socket clientSocket = socket.accept();
-			System.err.println("SERVER Client connected from " + clientSocket.getRemoteSocketAddress());
+			System.out.println("SERVER Client connected from " + clientSocket.getRemoteSocketAddress());
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());
+			update(new GameState(new Player[0]));
+			sendMessage("Player ID: " + playerID);
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}

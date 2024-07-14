@@ -1,6 +1,5 @@
 package xyz.cliserkad.consortium;
 
-import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -23,6 +22,10 @@ public class GameState implements Serializable {
 	private int lastRoll = 0;
 	private int currentPlayer = 0;
 
+	/**
+	 * Version for serialization. When editing classes, update this number to
+	 * the current date in YYYYMMDD format
+	 */
 	@Serial
 	private static final long serialVersionUID = 20240615L;
 
@@ -39,6 +42,14 @@ public class GameState implements Serializable {
 		for(Player player : this.players) {
 			player.setPosition(BoardPosition.GO, this);
 		}
+	}
+
+	/**
+	 * Creates a new game state with no players.
+	 * Used as a placeholder for updating clients during game initialization.
+	 */
+	public GameState() {
+		this(new Player[0]);
 	}
 
 	public void updatePlayers() {
@@ -115,6 +126,9 @@ public class GameState implements Serializable {
 		}
 	}
 
+	/**
+	 * Sets currentPlayer to the next player
+	 */
 	public void endTurn() {
 		currentPlayer = (currentPlayer + 1) % players.length;
 	}
