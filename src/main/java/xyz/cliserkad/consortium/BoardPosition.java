@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.abs;
 import static xyz.cliserkad.consortium.Main.*;
 
 /**
@@ -206,7 +207,7 @@ public enum BoardPosition implements Serializable {
 	}
 
 	public BoardPosition next(int steps) {
-		return values()[(ordinal() + steps) % values().length];
+		return values()[abs((ordinal() + steps) % values().length)];
 	}
 
 	public boolean isPurchasable() {

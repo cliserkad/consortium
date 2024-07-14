@@ -48,12 +48,12 @@ public class NetworkServer extends Thread implements GameClient {
 	}
 
 	@Override
-	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction>[] prompts) {
+	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction> prompt) {
 		try {
 			out.reset();
 			out.writeObject(avatar);
 			out.writeObject(gameState);
-			out.writeObject(prompts);
+			out.writeObject(prompt);
 			out.writeObject("poll");
 			final Object obj = in.readObject();
 			if(obj instanceof PlayerAction playerAction) {

@@ -8,5 +8,6 @@ import java.io.Serializable;
  */
 public sealed interface PlayerAction extends Serializable permits
 	PurchaseAction,
-	EndTurnAction
+	EndTurnAction,
+	BidAction
 { }

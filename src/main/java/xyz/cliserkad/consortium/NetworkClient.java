@@ -33,20 +33,16 @@ public class NetworkClient implements GameClient {
 				if(obj instanceof String cmd) {
 					if(cmd.equals("poll")) {
 						out.reset();
-						out.writeObject(poll((Player) arguments.get(0), (GameState) arguments.get(1), (Class<? extends PlayerAction>[]) arguments.get(2)));
+						out.writeObject(poll((Player) arguments.get(0), (GameState) arguments.get(1), (Class<? extends PlayerAction>) arguments.get(2)));
 					} else if(cmd.equals("update")) {
 						out.reset();
 						out.writeObject(update((GameState) arguments.get(0)));
 					} else
 						graphicalGameClient.sendMessage(cmd);
-					// System.err.println("CLIENT Received command from server: " + cmd);
 					arguments.clear();
 				} else {
 					arguments.add(obj);
-					// System.err.println("CLIENT Received object from server of type " + obj.getClass().getName());
-					// System.err.println(obj);
 				}
-				// System.err.println("CLIENT Read message loop done.");
 			}
 			System.err.println("CLIENT Connection closed.");
 		} catch (final IOException | ClassNotFoundException e) {
@@ -56,8 +52,8 @@ public class NetworkClient implements GameClient {
 	}
 
 	@Override
-	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction>[] prompts) {
-		return graphicalGameClient.poll(avatar, gameState, prompts);
+	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction> prompt) {
+		return graphicalGameClient.poll(avatar, gameState, prompt);
 	}
 
 	@Override

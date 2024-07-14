@@ -6,7 +6,7 @@ package xyz.cliserkad.consortium;
 public class AutoGameClient implements GameClient {
 
 	@Override
-	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction>[] prompts) {
+	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction> prompt) {
 		if(avatar.getPosition().logic instanceof Purchasable) {
 			return new PurchaseAction(avatar.getPosition());
 		}

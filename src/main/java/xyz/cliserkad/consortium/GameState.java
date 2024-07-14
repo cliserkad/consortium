@@ -2,9 +2,7 @@ package xyz.cliserkad.consortium;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static xyz.cliserkad.consortium.Main.*;
 import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
@@ -21,6 +19,11 @@ public class GameState implements Serializable {
 	private BoardElement[] boardElements;
 	private int lastRoll = 0;
 	private int currentPlayer = 0;
+	private Auction auction = null;
+	/**
+	 * The actions which the GameServer is currently waiting for from the current player
+	 */
+	private Set<Class<? extends PlayerAction>> blockingActions;
 
 	/**
 	 * Version for serialization. When editing classes, update this number to
@@ -42,6 +45,8 @@ public class GameState implements Serializable {
 		for(Player player : this.players) {
 			player.setPosition(BoardPosition.GO, this);
 		}
+
+		blockingActions = new HashSet<>();
 	}
 
 	/**
@@ -52,10 +57,17 @@ public class GameState implements Serializable {
 		this(new Player[0]);
 	}
 
-	public void updatePlayers() {
+	/**
+	 * Updates all Players with this GameState
+	 * @return true if all Players return true
+	 */
+	public boolean updatePlayers() {
+		boolean output = true;
 		for(Player player : players) {
-			player.controller.update(this);
+			if(!player.controller.update(this))
+				output = false;
 		}
+		return output;
 	}
 
 	public void nextTurn() {
@@ -88,30 +100,93 @@ public class GameState implements Serializable {
 		}
 		printIfContentful(player.getPosition().logic.onLand(player, this));
 		updatePlayers();
-		if(printIfContentful(purchasingLogic(player, getBoardElement(player)))) {
-			updatePlayers();
-		}
+		Duo<String, Boolean> purchaseResult = purchasingLogic(player, getBoardElement(player));
+		printIfContentful(purchaseResult.a);
+		updatePlayers();
+		if(getBoardElement(player).position.logic instanceof Purchasable && getBoardElement(player).owner == null && !purchaseResult.b)
+			printIfContentful(holdAuction(player, getBoardElement(player)));
 		return true;
 	}
 
-	public String purchasingLogic(Player player, BoardElement element) {
+	/**
+	 * Polls the current player for input
+	 * @param prompt the type of action to prompt for
+	 * @return the action the player chose
+	 */
+	private PlayerAction updateAndPoll(Player player, Class<? extends PlayerAction> prompt) {
+		blockingActions.add(prompt);
+		updatePlayers();
+		final PlayerAction response = player.controller.poll(player, this, prompt);
+		blockingActions.remove(prompt);
+		updatePlayers();
+		return response;
+	}
+
+	private String holdAuction(Player firstBidder, BoardElement element) {
+		if(element.position.logic instanceof Purchasable purchasable) {
+			// add all players who can afford the property to the auction
+			auction = new Auction(element, new ArrayList<>(Arrays.asList(players)));
+			auction.bidders.removeIf(player -> player.getMoney() < 1);
+
+			// abort if no players have any money :(
+			if(auction.bidders.isEmpty())
+				return "No players have enough money to bid on " + element.position.niceName;
+
+			// set the current bidder to the first bidder if they can participate
+			if(auction.bidders.contains(firstBidder))
+				auction.currentBidder = firstBidder;
+			else
+				auction.currentBidder = auction.bidders.getFirst();
+
+			while((auction.bidders.size() == 1 && auction.bid <= 0) || auction.bidders.size() > 1) {
+				PlayerAction response = updateAndPoll(auction.currentBidder, BidAction.class);
+				if(response instanceof BidAction bidAction && bidAction.amount() > auction.bid) {
+					auction.bid = bidAction.amount();
+					auction.bids.add(bidAction);
+					printIfContentful(auction.currentBidder.getIcon() + " bid $" + auction.bid + " on " + element.position.niceName);
+				} else {
+					auction.bidders.remove(auction.currentBidder);
+					printIfContentful(auction.currentBidder.getIcon() + " withdrew from bidding on " + element.position.niceName);
+				}
+				if(!auction.bidders.isEmpty())
+					auction.currentBidder = auction.bidders.get((auction.currentBidder.playerIndex + 1) % auction.bidders.size());
+			}
+
+			if(!auction.bidders.isEmpty() && auction.bid > 0) {
+				final Player auctionWinner = auction.bidders.getFirst();
+				auctionWinner.addMoney(-auction.bid);
+				element.setOwner(auctionWinner);
+				return auctionWinner.getIcon() + " won the auction for " + element.position.niceName + " for $" + auction.bid;
+			} else {
+				return "Auction for " + element.position.niceName + " failed.";
+			}
+		} else {
+			return EMPTY_STRING;
+		}
+	}
+
+	/**
+	 * Handles the logic for purchasing a property
+	 * @return true if a property was purchased
+	 */
+	public Duo<String, Boolean> purchasingLogic(Player player, BoardElement element) {
 		if(element.position.logic instanceof Purchasable purchasable && element.owner == null) {
 			if(player.getMoney() >= purchasable.cost()) {
-				PlayerAction response = player.controller.poll(player, this, new Class[]{ PurchaseAction.class });
+				PlayerAction response = updateAndPoll(player, PurchaseAction.class);
 				if(response instanceof PurchaseAction purchaseAction) {
 					if(purchaseAction.position() == element.position) {
 						player.addMoney(-purchasable.cost());
 						element.setOwner(player);
-						return player.getIcon() + " purchased " + element.position.niceName + " for $" + purchasable.cost();
+						return new Duo<>(player.getIcon() + " purchased " + element.position.niceName + " for $" + purchasable.cost(), true);
 					} else {
-						return player.getIcon() + " chose not to purchase " + element.position.niceName + ". GameClient may have returned an incorrect position";
+						return new Duo<>(player.getIcon() + " GameClient returned an incorrect position\n", false);
 					}
 				}
-				return player.getIcon() + " chose not to purchase " + element.position.niceName;
+				return new Duo<>(player.getIcon() + " chose not to purchase " + element.position.niceName, false);
 			}
-			return player.getIcon() + " could not purchase " + element.position.niceName + " due to lack of funds";
+			return new Duo<>(player.getIcon() + " could not purchase " + element.position.niceName + " due to lack of funds", false);
 		}
-		return EMPTY_STRING;
+		return new Duo<>(EMPTY_STRING, false);
 	}
 
 	public boolean printIfContentful(String string) {
@@ -136,6 +211,10 @@ public class GameState implements Serializable {
 	public boolean playerOwesRent(Player player) {
 		BoardElement element = getBoardElement(player);
 		return element.owner != null && element.owner != player && element.improvementAmt >= 0;
+	}
+
+	public Auction getAuction() {
+		return auction;
 	}
 
 	public Player getCurrentPlayer() {
@@ -166,6 +245,10 @@ public class GameState implements Serializable {
 
 	public Player[] getPlayers() {
 		return players;
+	}
+
+	public Set<Class<? extends PlayerAction>> getBlockingActions() {
+		return blockingActions;
 	}
 
 	public boolean isEntireGroupOwned(BoardPosition queryPosition) {

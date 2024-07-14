@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class GraphicalGameClient implements GameClient {
 	public static final String WINDOW_TITLE = "Consortium";
 
+	public static final int MIN_BID = 10;
+
 	private final JFrame frame;
 	private final JPanel panel;
 	private boolean isInitialized = false;
@@ -53,18 +55,34 @@ public class GraphicalGameClient implements GameClient {
 	}
 
 	@Override
-	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction>[] prompts) {
+	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction> prompt) {
 		update(gameState);
 		frame.setTitle(WINDOW_TITLE + " - Player " + avatar.playerIndex);
 		this.avatar = avatar;
-		if(avatar.getPosition().logic instanceof Purchasable purchasable) {
+		if(prompt == PurchaseAction.class && avatar.getPosition().logic instanceof Purchasable purchasable) {
 			// Show a dialog box asking the player if they want to purchase the property
 			final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to purchase " + avatar.getPosition().niceName + " for $" + purchasable.cost() + "?", "Purchase Property", JOptionPane.YES_NO_OPTION);
 			if(dialogResult == JOptionPane.YES_OPTION) {
 				return new PurchaseAction(avatar.getPosition());
+			} else {
+				return null;
 			}
+		} else if(prompt == BidAction.class) {
+			// withdraw from bidding automatically if the player doesn't have enough money to bid
+			if(gameState.getAuction().bid + MIN_BID > avatar.getMoney()) {
+				return null;
+			}
+			// Show a dialog box asking the player if they want to bid on the property
+			final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to bid on " + gameState.getAuction().property.position.niceName + "?", "Bid on Property", JOptionPane.YES_NO_OPTION);
+			if(dialogResult == JOptionPane.YES_OPTION) {
+				return new BidAction(gameState.getAuction().property.position, gameState.getAuction().bid + MIN_BID);
+			} else {
+				return null;
+			}
+		} else {
+			System.out.println("Received unrecognized prompt " + prompt.getSimpleName());
+			return null;
 		}
-		return null;
 	}
 
 	@Override
