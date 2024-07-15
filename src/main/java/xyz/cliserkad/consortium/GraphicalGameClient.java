@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.ArrayList;
 
+import static xyz.cliserkad.consortium.NetworkServer.PLAYER_ID;
+
 public class GraphicalGameClient implements GameClient {
 	public static final String WINDOW_TITLE = "Consortium";
 
@@ -54,10 +56,14 @@ public class GraphicalGameClient implements GameClient {
 		System.exit(1);
 	}
 
+	private void setTitle(int playerIndex) {
+		frame.setTitle(WINDOW_TITLE + " - Player " + playerIndex + " " + Player.PLAYER_ICONS[playerIndex]);
+	}
+
 	@Override
 	public PlayerAction poll(Player avatar, GameState gameState, Class<? extends PlayerAction> prompt) {
 		update(gameState);
-		frame.setTitle(WINDOW_TITLE + " - Player " + avatar.playerIndex);
+		setTitle(avatar.playerIndex);
 		this.avatar = avatar;
 		if(prompt == PurchaseAction.class && avatar.getPosition().logic instanceof Purchasable purchasable) {
 			// Show a dialog box asking the player if they want to purchase the property
@@ -87,6 +93,13 @@ public class GraphicalGameClient implements GameClient {
 
 	@Override
 	public void sendMessage(String message) {
+		if(message.startsWith(PLAYER_ID)) {
+			try {
+				setTitle(Integer.parseInt(message.substring(PLAYER_ID.length())));
+			} catch(NumberFormatException e) {
+				System.err.println("Couldn't parse player id number " + message);
+			}
+		}
 		System.out.println(message);
 	}
 

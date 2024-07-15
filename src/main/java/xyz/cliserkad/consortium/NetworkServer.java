@@ -9,6 +9,7 @@ import java.util.List;
 
 public class NetworkServer extends Thread implements GameClient {
 	public static final int BASE_PORT = 5555;
+	public static final String PLAYER_ID = "PlayerID:";
 
 	private ServerSocket socket;
 	private Socket clientSocket;
@@ -41,7 +42,7 @@ public class NetworkServer extends Thread implements GameClient {
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());
 			update(new GameState(new Player[0]));
-			sendMessage("Player ID: " + playerID);
+			sendMessage(PLAYER_ID + playerID);
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
