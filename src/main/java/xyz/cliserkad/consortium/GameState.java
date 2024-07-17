@@ -11,6 +11,7 @@ import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
  * Represents the state of the game, and contains logic for editing that state
  */
 public class GameState implements Serializable {
+
 	private final transient int[] communityCardStack = genShuffledArray(CommunityChestLogic.CommunityCard.values().length);
 	private final transient int[] chanceCardStack = genShuffledArray(ChanceLogic.ChanceCard.values().length);
 	private int communityCardIndex = 0;
@@ -26,8 +27,7 @@ public class GameState implements Serializable {
 	private Set<Class<? extends PlayerAction>> blockingActions;
 
 	/**
-	 * Version for serialization. When editing classes, update this number to
-	 * the current date in YYYYMMDD format
+	 * Version for serialization. When editing classes, update this number to the current date in YYYYMMDD format
 	 */
 	@Serial
 	private static final long serialVersionUID = 20240615L;
@@ -50,8 +50,7 @@ public class GameState implements Serializable {
 	}
 
 	/**
-	 * Creates a new game state with no players.
-	 * Used as a placeholder for updating clients during game initialization.
+	 * Creates a new game state with no players. Used as a placeholder for updating clients during game initialization.
 	 */
 	public GameState() {
 		this(new Player[0]);
@@ -59,6 +58,7 @@ public class GameState implements Serializable {
 
 	/**
 	 * Updates all Players with this GameState
+	 *
 	 * @return true if all Players return true
 	 */
 	public boolean updatePlayers() {
@@ -90,26 +90,27 @@ public class GameState implements Serializable {
 	public boolean movePlayer(Player player, BoardPosition destination, int spaces) {
 		player.setPosition(player.getPosition().next(), this);
 		while(player.getPosition() != destination) {
-			printIfContentful(player.getPosition().logic.onPass(player, this));
+			broadcast(player.getPosition().logic.onPass(player, this));
 			player.setPosition(player.getPosition().next(), this);
 		}
 		if(spaces > 0) {
-			printIfContentful(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().niceName);
+			broadcast(player.getIcon() + " rolled a " + spaces + " and landed on " + player.getPosition().niceName);
 		} else {
-			printIfContentful(player.getIcon() + " landed on " + player.getPosition().niceName);
+			broadcast(player.getIcon() + " landed on " + player.getPosition().niceName);
 		}
-		printIfContentful(player.getPosition().logic.onLand(player, this));
+		broadcast(player.getPosition().logic.onLand(player, this));
 		updatePlayers();
 		Duo<String, Boolean> purchaseResult = purchasingLogic(player, getBoardElement(player));
-		printIfContentful(purchaseResult.a);
+		broadcast(purchaseResult.a);
 		updatePlayers();
 		if(getBoardElement(player).position.logic instanceof Purchasable && getBoardElement(player).owner == null && !purchaseResult.b)
-			printIfContentful(holdAuction(player, getBoardElement(player)));
+			broadcast(holdAuction(player, getBoardElement(player)));
 		return true;
 	}
 
 	/**
 	 * Polls the current player for input
+	 *
 	 * @param prompt the type of action to prompt for
 	 * @return the action the player chose
 	 */
@@ -143,10 +144,10 @@ public class GameState implements Serializable {
 				if(response instanceof BidAction bidAction && bidAction.amount() > auction.bid) {
 					auction.bid = bidAction.amount();
 					auction.bids.add(bidAction);
-					printIfContentful(auction.currentBidder.getIcon() + " bid $" + auction.bid + " on " + element.position.niceName);
+					broadcast(auction.currentBidder.getIcon() + " bid $" + auction.bid + " on " + element.position.niceName);
 				} else {
 					auction.bidders.remove(auction.currentBidder);
-					printIfContentful(auction.currentBidder.getIcon() + " withdrew from bidding on " + element.position.niceName);
+					broadcast(auction.currentBidder.getIcon() + " withdrew from bidding on " + element.position.niceName);
 				}
 				if(!auction.bidders.isEmpty())
 					auction.currentBidder = auction.bidders.get((auction.currentBidder.playerIndex + 1) % auction.bidders.size());
@@ -167,6 +168,7 @@ public class GameState implements Serializable {
 
 	/**
 	 * Handles the logic for purchasing a property
+	 *
 	 * @return true if a property was purchased
 	 */
 	public Duo<String, Boolean> purchasingLogic(Player player, BoardElement element) {
@@ -189,7 +191,7 @@ public class GameState implements Serializable {
 		return new Duo<>(EMPTY_STRING, false);
 	}
 
-	public boolean printIfContentful(String string) {
+	public boolean broadcast(String string) {
 		if(string != null && !string.isEmpty() && !string.isBlank()) {
 			System.out.println(string);
 			for(Player player : players) {
@@ -230,7 +232,7 @@ public class GameState implements Serializable {
 	}
 
 	public int rollDice() {
-		final int out =  RANDOM.nextInt(DICE_MAX - 1) + DICE_MIN;
+		final int out = RANDOM.nextInt(DICE_MAX - 1) + DICE_MIN;
 		lastRoll = out;
 		return out;
 	}
@@ -265,8 +267,7 @@ public class GameState implements Serializable {
 	/**
 	 * in place shuffle of an array of integers
 	 */
-	public static int[] genShuffledArray(int length)
-	{
+	public static int[] genShuffledArray(int length) {
 		// Creating an array of integers
 		Integer[] numbers = new Integer[length];
 		for(int i = 0; i < length; i++)

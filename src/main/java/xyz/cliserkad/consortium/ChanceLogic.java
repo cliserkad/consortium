@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 public class ChanceLogic implements PositionLogic {
+
 	public static final ChanceLogic INSTANCE = new ChanceLogic();
 
 	enum ChanceCard {
@@ -55,8 +56,8 @@ public class ChanceLogic implements PositionLogic {
 				}
 			}
 			case BANK_ERROR -> player.addMoney(200);
-			case GET_OUT_OF_JAIL -> System.out.println("Nah, you're stuck in jail.");
-			case GO_BACK_THREE -> System.out.println("TODO: implement backwards movement");
+			case GET_OUT_OF_JAIL -> gameState.broadcast("Nah, you're stuck in jail.");
+			case GO_BACK_THREE -> gameState.broadcast("TODO: implement backwards movement");
 			case GO_TO_JAIL -> gameState.movePlayer(player, BoardPosition.JAIL, 0);
 			case GEN_REPAIRS -> {
 				int houseCost = 40;
@@ -84,10 +85,12 @@ public class ChanceLogic implements PositionLogic {
 			}
 			case BUILDING_LOAN -> player.addMoney(150);
 			case ADVANCE_TO_VERMONT -> gameState.movePlayer(player, BoardPosition.VERMONT_AVENUE, 0);
-		};
+		}
+		;
 		return player.getIcon() + " pulled Community Chest Card " + pulledCard.name();
 	}
 
-	private ChanceLogic() {}
+	private ChanceLogic() {
+	}
 
 }
