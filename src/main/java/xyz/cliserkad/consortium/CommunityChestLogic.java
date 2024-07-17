@@ -20,7 +20,10 @@ public class CommunityChestLogic implements PositionLogic {
 		CONSULTANCY_FEE,
 		STREET_REPAIR,
 		BEAUTY_CONTEST,
-		INHERITANCE
+		INHERITANCE;
+
+		public final String niceName = Main.prettifyEnumName(name());
+
 	}
 
 	@Override
@@ -47,7 +50,7 @@ public class CommunityChestLogic implements PositionLogic {
 			case STREET_REPAIR -> gameState.broadcast("You owe $40 per house and $115 per hotel.");
 			case BEAUTY_CONTEST -> player.addMoney(10);
 		}
-		return player.getIcon() + " pulled Community Chest Card " + pulledCard.name();
+		return player.getIcon() + " pulled Community Chest Card \"" + pulledCard.niceName + "\"";
 	}
 
 	private CommunityChestLogic() {

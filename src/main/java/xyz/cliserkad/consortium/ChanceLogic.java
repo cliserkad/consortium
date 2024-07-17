@@ -20,7 +20,10 @@ public class ChanceLogic implements PositionLogic {
 		POOR_TAX,
 		CHAIRMAN_OF_BOARD,
 		BUILDING_LOAN,
-		ADVANCE_TO_VERMONT,
+		ADVANCE_TO_VERMONT;
+
+		public final String niceName = Main.prettifyEnumName(name());
+
 	}
 
 	@Override
@@ -86,8 +89,7 @@ public class ChanceLogic implements PositionLogic {
 			case BUILDING_LOAN -> player.addMoney(150);
 			case ADVANCE_TO_VERMONT -> gameState.movePlayer(player, BoardPosition.VERMONT_AVENUE, 0);
 		}
-		;
-		return player.getIcon() + " pulled Community Chest Card " + pulledCard.name();
+		return player.getIcon() + " pulled Chance Card \"" + pulledCard.niceName + "\"";
 	}
 
 	private ChanceLogic() {

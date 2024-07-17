@@ -1,6 +1,6 @@
 package xyz.cliserkad.consortium;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,7 +177,7 @@ public enum BoardPosition implements Serializable {
 	BoardPosition(final Color color, final PositionLogic logic) {
 		this.color = color;
 		this.logic = logic;
-		this.niceName = niceName();
+		this.niceName = prettifyEnumName(name());
 	}
 
 	public List<BoardPosition> colorGroup() {
@@ -220,22 +220,6 @@ public enum BoardPosition implements Serializable {
 				"\n\tname: " + name() + "," +
 				"\n\tcolor: " + color + "," +
 				"\n}";
-	}
-
-	private String niceName() {
-		final String name = name().replace("_", " ");
-		StringBuilder out = new StringBuilder();
-		out.append(Character.toUpperCase(name.charAt(0)));
-		for(int i = 1; i < name.length(); i++) {
-			if(!Character.isDigit(name.charAt(i))) {
-				if(name.charAt(i - 1) == ' ') {
-					out.append(Character.toUpperCase(name.charAt(i)));
-				} else {
-					out.append(Character.toLowerCase(name.charAt(i)));
-				}
-			}
-		}
-		return out.toString();
 	}
 
 	public Point2i getBoardCoords() {
