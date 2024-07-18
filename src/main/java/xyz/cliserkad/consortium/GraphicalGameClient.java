@@ -3,12 +3,11 @@ package xyz.cliserkad.consortium;
 import javax.swing.*;
 import java.awt.*;
 import java.io.PrintStream;
-import java.util.List;
 import java.util.ArrayList;
-
-import static xyz.cliserkad.consortium.NetworkServer.PLAYER_ID;
+import java.util.List;
 
 public class GraphicalGameClient implements GameClient {
+
 	public static final String WINDOW_TITLE = "Consortium";
 
 	public static final int MIN_BID = 10;
@@ -92,14 +91,12 @@ public class GraphicalGameClient implements GameClient {
 	}
 
 	@Override
+	public void setPlayerID(Integer playerID) {
+		setTitle(playerID);
+	}
+
+	@Override
 	public void sendMessage(String message) {
-		if(message.startsWith(PLAYER_ID)) {
-			try {
-				setTitle(Integer.parseInt(message.substring(PLAYER_ID.length())));
-			} catch(NumberFormatException e) {
-				System.err.println("Couldn't parse player id number " + message);
-			}
-		}
 		System.out.println(message);
 	}
 

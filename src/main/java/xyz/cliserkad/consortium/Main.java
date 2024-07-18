@@ -1,5 +1,6 @@
 package xyz.cliserkad.consortium;
 
+import java.io.IOException;
 import java.util.Random;
 
 public class Main {
@@ -12,6 +13,11 @@ public class Main {
 	public static final int DICE_MIN = 2;
 
 	public static final Random RANDOM = new Random();
+
+	public static void main(String[] args) throws IOException {
+		NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), args[0], Integer.parseInt(args[1]));
+		responder.start();
+	}
 
 	public static String prettifyEnumName(String input) {
 		final String name = input.replace("_", " ");

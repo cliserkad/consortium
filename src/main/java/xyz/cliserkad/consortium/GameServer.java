@@ -1,36 +1,59 @@
 package xyz.cliserkad.consortium;
 
-import javax.swing.*;
 import java.io.IOException;
-import java.util.TimerTask;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Holds game state, manages the game loop, sends updates to clients and processes client input.
  */
 public class GameServer extends TimerTask {
+
+	public static final int BASE_PORT = 5555;
+
 	private GameState gameState;
 
 	private int turns;
 
-	public GameServer(int playerCount) throws IOException, InterruptedException {
-		NetworkServer server0 = new NetworkServer(0);
-		NetworkServer server1 = new NetworkServer(1);
-		server0.start();
-		server1.start();
-		server0.join();
-		server1.join();
-		Player p0 = new Player(server0);
-		Player p1 = new Player(server1);
+	public GameServer(final int playerCount) throws IOException, InterruptedException {
+		List<NetworkedController<GameClient>> controllers = new ArrayList<>();
+
+		for(int i = 0; i < playerCount; i++) {
+			NetworkedController<GameClient> controller = new NetworkedController<>(BASE_PORT + i, GameClient.class, true);
+			controllers.add(controller);
+
+		}
+
+		for(NetworkedController<GameClient> controller : controllers) {
+			controller.start();
+		}
+
+		for(NetworkedController<GameClient> controller : controllers) {
+			controller.join();
+		}
 
 		System.out.println("Connections accepted...");
 
-		Player[] players = { p0, p1 };
-		gameState = new GameState(players);
+		List<Player> players = new ArrayList<>();
+		for(NetworkedController<GameClient> controller : controllers) {
+			players.add(new Player(controller.proxy));
+		}
+		gameState = new GameState(players.toArray(new Player[0]));
+
+		System.out.println("Game state initialized...");
 	}
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		GameServer server = new GameServer(3);
+		final int playerCount;
+		try {
+			playerCount = Integer.parseInt(args[0]);
+		} catch(ArrayIndexOutOfBoundsException | NumberFormatException e) {
+			System.err.println("Failed to parse player count from command line arguments");
+			return;
+		}
+		GameServer server = new GameServer(playerCount);
 		Timer timer = new Timer("GameServerTimer");
 		timer.scheduleAtFixedRate(server, 6000, 6000);
 	}

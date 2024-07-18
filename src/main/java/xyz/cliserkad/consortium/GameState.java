@@ -44,9 +44,12 @@ public class GameState implements Serializable {
 
 		for(Player player : this.players) {
 			player.setPosition(BoardPosition.GO, this);
+			player.controller.setPlayerID(player.playerIndex);
 		}
 
 		blockingActions = new HashSet<>();
+
+		updatePlayers();
 	}
 
 	/**
