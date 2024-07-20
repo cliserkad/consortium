@@ -36,7 +36,7 @@ public class GameState implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 20240805L;
 
-	public GameState(Player[] players) {
+	public GameState(List<GameClient> clients) {
 		boardElements = new BoardElement[BoardPosition.values().length];
 		for(int i = 0; i < BoardPosition.values().length; i++) {
 			final BoardPosition position = BoardPosition.values()[i];
@@ -44,9 +44,11 @@ public class GameState implements Serializable {
 			boardElements[i] = boardElement;
 		}
 
-		this.players = players;
+		players = new Player[clients.size()];
+		for(int i = 0; i < clients.size(); i++)
+			players[i] = new Player(clients.get(i));
 
-		for(Player player : this.players) {
+		for(Player player : players) {
 			player.setPosition(BoardPosition.GO, this);
 			player.controller.setPlayerID(player.playerIndex);
 		}
@@ -60,7 +62,7 @@ public class GameState implements Serializable {
 	 * Creates a new game state with no players. Used as a placeholder for updating clients during game initialization.
 	 */
 	public GameState() {
-		this(new Player[0]);
+		this(new ArrayList<>());
 	}
 
 	/**

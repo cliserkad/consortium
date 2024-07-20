@@ -48,9 +48,11 @@ public class GraphicalGameClient implements GameClient {
 				printOutput,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-			), constraints);
+			),
+			constraints
+		);
 
-		update(new GameState(new Player[] { new Player(this) }));
+		update(new GameState(new ArrayList<>()));
 
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
