@@ -19,29 +19,21 @@ public class GameServer extends TimerTask {
 
 	public GameServer(final int playerCount) throws IOException, InterruptedException {
 		List<NetworkedController<GameClient>> controllers = new ArrayList<>();
-
 		for(int i = 0; i < playerCount; i++) {
-			NetworkedController<GameClient> controller = new NetworkedController<>(BASE_PORT + i, GameClient.class, true);
-			controllers.add(controller);
-
+			controllers.add(new NetworkedController<>(BASE_PORT + i, GameClient.class, true));
 		}
-
 		for(NetworkedController<GameClient> controller : controllers) {
 			controller.start();
 		}
-
 		for(NetworkedController<GameClient> controller : controllers) {
 			controller.join();
 		}
-
 		System.out.println("Connections accepted...");
-
-		List<Player> players = new ArrayList<>();
+		List<GameClient> clients = new ArrayList<>();
 		for(NetworkedController<GameClient> controller : controllers) {
-			players.add(new Player(controller.proxy));
+			clients.add(controller.proxy);
 		}
-		gameState = new GameState(players.toArray(new Player[0]));
-
+		gameState = new GameState(clients);
 		System.out.println("Game state initialized...");
 	}
 

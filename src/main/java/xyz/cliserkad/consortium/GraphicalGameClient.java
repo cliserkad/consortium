@@ -36,14 +36,10 @@ public class GraphicalGameClient implements GameClient {
 		printOutput.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
 		printOutput.setEditable(false);
 		System.setOut(new PrintStream(new TextAreaOutputStream(printOutput)));
-		panel.add(
-			new JScrollPane(
-				printOutput,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-			), constraints);
+		panel.add(new JScrollPane(printOutput, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), constraints);
 
-		update(new GameState(new Player[] { new Player(this) }));
+		GameState placeholder = new GameState(new ArrayList<>());
+		update(placeholder);
 
 		frame.add(panel);
 		frame.setVisible(true);
