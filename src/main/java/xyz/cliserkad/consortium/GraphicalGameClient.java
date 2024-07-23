@@ -12,7 +12,8 @@ public class GraphicalGameClient implements GameClient {
 	public static final String END_TURN = "End Turn";
 	public static final String TRADE = "Trade";
 	public static final String DECLARE_BANKRUPTCY = "Declare Bankruptcy";
-	public static final String[] END_OF_TURN_ACTIONS = { END_TURN, TRADE, DECLARE_BANKRUPTCY };
+	public static final String IMPROVE_PROPERTY = "Improve Property";
+	public static final String[] END_OF_TURN_ACTIONS = { END_TURN, TRADE, IMPROVE_PROPERTY, DECLARE_BANKRUPTCY };
 	public static final List<String> END_OF_TURN_ACTIONS_LIST = List.of(END_OF_TURN_ACTIONS);
 	public static final int MIN_BID = 10;
 
@@ -127,6 +128,22 @@ public class GraphicalGameClient implements GameClient {
 					Trade sample = new Trade(avatar, tradee, 0, 0, positionsRequested, positionsOffered);
 					return new ProposeTradeAction(sample);
 				} else {
+					return new EndTurnAction();
+				}
+			} else if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(IMPROVE_PROPERTY)) {
+				Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
+
+				JPanel panel = new JPanel();
+				panel.add(avatarPositions.a);
+				panel.setVisible(true);
+
+				final int dialogResult2 = JOptionPane.showConfirmDialog(frame, panel, "Select Property to Improve", JOptionPane.YES_NO_CANCEL_OPTION);
+
+				if(dialogResult2 == JOptionPane.YES_OPTION || dialogResult2 == JOptionPane.NO_OPTION) {
+					BoardPosition position = gameState.getBoardElement(avatarPositions.b.getSelectedValue()).position;
+					return new ImprovePropertyAction(position, dialogResult2 == JOptionPane.YES_OPTION);
+				} else {
+					System.out.println("Improvement cancelled");
 					return new EndTurnAction();
 				}
 			} else if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(DECLARE_BANKRUPTCY)) {

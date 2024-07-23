@@ -12,5 +12,6 @@ public sealed interface PlayerAction extends Serializable permits
 	PurchaseAction,
 	ProposeTradeAction,
 	AcceptTradeAction,
-	DeclareBankruptcyAction
+	DeclareBankruptcyAction,
+	ImprovePropertyAction
 { }

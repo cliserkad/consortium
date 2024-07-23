@@ -12,6 +12,8 @@ public class Main {
 	public static final int DICE_MAX = 12;
 	public static final int DICE_MIN = 2;
 	public static final String NULL_STRING = "null";
+	public static final int MAX_IMPROVEMENT = 5;
+	public static final int IMPROVEMENT_REFUND_DIVISOR = 2;
 
 	public static final Random RANDOM = new Random();
 

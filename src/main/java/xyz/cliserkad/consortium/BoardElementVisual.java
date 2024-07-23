@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoardElementVisual extends JPanel implements GameStateReceiver {
+	public static final String[] IMPROVEMENT_LABELS = {"🔐", "", "🏠", "🏠🏡", "🏠🏡🏠", "🏠🏡🏠🏡", "🏨"};
+
 	private BoardElement element;
 
 	private JLabel nameLabel;
-	private JLabel ownerLabel;
-	private JLabel costLabel;
+	private JLabel purchaseLabel;
+	private JLabel improvementLabel;
 
 	private List<PlayerVisual> playerVisuals = new ArrayList<>();
 
@@ -37,19 +39,27 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 		add(nameLabel, constraints);
 
 		if(element.position.logic instanceof Purchasable purchasable) {
-			ownerLabel = new JLabel("NOT OWNED ", SwingConstants.CENTER);
-			ownerLabel.setForeground(Color.RED);
-			ownerLabel.setBackground(Color.WHITE);
-			ownerLabel.setOpaque(true);
+			purchaseLabel = new JLabel("Cost: " + purchasable.cost(), SwingConstants.CENTER);
+			purchaseLabel.setForeground(Color.BLACK);
+			purchaseLabel.setBackground(Color.WHITE);
+			purchaseLabel.setOpaque(true);
 			constraints.gridy = 2;
-			add(ownerLabel, constraints);
+			add(purchaseLabel, constraints);
 
-			costLabel = new JLabel("Cost: " + purchasable.cost(), SwingConstants.CENTER);
-			costLabel.setForeground(Color.BLACK);
-			costLabel.setBackground(Color.WHITE);
-			costLabel.setOpaque(true);
+			improvementLabel = new JLabel(IMPROVEMENT_LABELS[1], SwingConstants.CENTER);
+			improvementLabel.setForeground(Color.BLACK);
+			improvementLabel.setBackground(Color.WHITE);
+			improvementLabel.setOpaque(true);
 			constraints.gridy = 3;
-			add(costLabel, constraints);
+			add(improvementLabel, constraints);
+		}
+	}
+
+	public String improvementString() {
+		if(element.position.logic instanceof Purchasable) {
+			return IMPROVEMENT_LABELS[element.improvementAmt + 1];
+		} else {
+			return "";
 		}
 	}
 
@@ -65,8 +75,8 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 		if(element.position.logic instanceof Purchasable) {
 			targetComponentCount = 3;
 			if(element.owner != null) {
-				ownerLabel.setForeground(Color.BLACK);
-				ownerLabel.setText(element.owner.getIcon());
+				purchaseLabel.setText("Owner: " + element.owner.getIcon());
+				improvementLabel.setText(improvementString());
 			}
 		} else {
 			targetComponentCount = 1;
@@ -83,7 +93,7 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 				constraints.fill = GridBagConstraints.NONE;
 				constraints.anchor = GridBagConstraints.SOUTHWEST;
 				constraints.gridx = player.playerIndex;
-				constraints.gridy = 4;
+				constraints.gridy = targetComponentCount + 1;
 				playerVisuals.add(new PlayerVisual(player));
 				add(new PlayerVisual(player), constraints);
 			}

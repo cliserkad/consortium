@@ -105,6 +105,25 @@ public class GameState implements Serializable {
 				broadcast(getCurrentPlayer().getIcon() + " has declared bankruptcy");
 				System.out.println("Players remaining: " + Arrays.toString(players));
 				return; // end the turn loop forcefully
+			} else if(response instanceof ImprovePropertyAction improveProperty) {
+				BoardElement element = getBoardElement(improveProperty.position());
+				if(element.position.logic instanceof StandardLogic logic) {
+					if(element.owner == getCurrentPlayer() && element.improvementAmt < MAX_IMPROVEMENT && getCurrentPlayer().getMoney() >= logic.costPerHouse) {
+						if(improveProperty.isPositive()) {
+							getCurrentPlayer().addMoney(-logic.costPerHouse);
+							element.improvementAmt++;
+							broadcast(getCurrentPlayer().getIcon() + " improved " + element.position.niceName + " for $" + logic.costPerHouse);
+						} else {
+							getCurrentPlayer().addMoney(logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR);
+							element.improvementAmt--;
+							broadcast(getCurrentPlayer().getIcon() + " downgraded " + element.position.niceName + " for $" + (logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR));
+						}
+					} else {
+						getCurrentPlayer().controller.sendMessage("You cannot improve " + element.position.niceName);
+					}
+				} else {
+					getCurrentPlayer().controller.sendMessage(element.position.niceName + " can never be improved.");
+				}
 			} else {
 				if(response == null)
 					getCurrentPlayer().controller.sendMessage("Invalid action, null");
