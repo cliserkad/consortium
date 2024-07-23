@@ -61,7 +61,15 @@ public class GameServer extends TimerTask {
 	@Override
 	public void run() {
 		if(turns > 0) {
-			gameState.nextTurn();
+			if(gameState.activePlayerCount() > 1) {
+				gameState.nextTurn();
+			} else if(gameState.activePlayerCount() == 1) {
+				gameState.broadcast("Game over! " + gameState.getCurrentPlayer() + " wins!");
+				System.exit(0);
+			} else {
+				gameState.broadcast("No Players in game. Exiting...");
+				System.exit(0);
+			}
 		} else {
 			System.out.println("Game Loop on Thread " + Thread.currentThread().getId());
 			gameState.updatePlayers();

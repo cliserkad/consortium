@@ -11,6 +11,7 @@ public class Player implements Serializable {
 	private static int numPlayers = 0;
 
 	private int money;
+	private boolean isBankrupt;
 	public final int playerIndex;
 	private BoardPosition position;
 	public transient final GameClient controller;
@@ -20,6 +21,7 @@ public class Player implements Serializable {
 		money = 1800;
 		playerIndex = numPlayers++;
 		this.controller = controller;
+		isBankrupt = false;
 	}
 
 	public BoardPosition getPosition() {
@@ -54,6 +56,14 @@ public class Player implements Serializable {
 	@Override
 	public String toString() {
 		return "Player " + playerIndex + getIcon();
+	}
+
+	public void goBankrupt() {
+		this.isBankrupt = true;
+	}
+
+	public boolean isBankrupt() {
+		return isBankrupt;
 	}
 
 }

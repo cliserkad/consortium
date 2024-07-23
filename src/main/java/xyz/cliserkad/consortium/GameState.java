@@ -100,6 +100,11 @@ public class GameState implements Serializable {
 				} else {
 					broadcast("Trade declined.");
 				}
+			} else if(response instanceof DeclareBankruptcyAction) {
+				getCurrentPlayer().goBankrupt();
+				broadcast(getCurrentPlayer().getIcon() + " has declared bankruptcy");
+				System.out.println("Players remaining: " + Arrays.toString(players));
+				return; // end the turn loop forcefully
 			} else {
 				if(response == null)
 					getCurrentPlayer().controller.sendMessage("Invalid action, null");
@@ -244,7 +249,18 @@ public class GameState implements Serializable {
 	 * Sets currentPlayer to the next player
 	 */
 	public void endTurn() {
-		currentPlayer = (currentPlayer + 1) % players.length;
+		do {
+			currentPlayer = (currentPlayer + 1) % players.length;
+		} while(players[currentPlayer].isBankrupt());
+	}
+
+	public int activePlayerCount() {
+		int count = 0;
+		for(Player player : players) {
+			if(!player.isBankrupt())
+				count++;
+		}
+		return count;
 	}
 
 	public boolean playerOwesRent(Player player) {

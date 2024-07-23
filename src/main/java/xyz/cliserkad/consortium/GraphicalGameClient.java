@@ -129,6 +129,8 @@ public class GraphicalGameClient implements GameClient {
 				} else {
 					return new EndTurnAction();
 				}
+			} else if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(DECLARE_BANKRUPTCY)) {
+				return new DeclareBankruptcyAction();
 			} else {
 				return new EndTurnAction();
 			}
