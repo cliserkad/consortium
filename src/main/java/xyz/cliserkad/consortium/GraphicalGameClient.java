@@ -9,7 +9,11 @@ import java.util.List;
 public class GraphicalGameClient implements GameClient {
 
 	public static final String WINDOW_TITLE = "Consortium";
-
+	public static final String END_TURN = "End Turn";
+	public static final String TRADE = "Trade";
+	public static final String DECLARE_BANKRUPTCY = "Declare Bankruptcy";
+	public static final String[] END_OF_TURN_ACTIONS = { END_TURN, TRADE, DECLARE_BANKRUPTCY };
+	public static final List<String> END_OF_TURN_ACTIONS_LIST = List.of(END_OF_TURN_ACTIONS);
 	public static final int MIN_BID = 10;
 
 	private final JFrame frame;
@@ -19,7 +23,7 @@ public class GraphicalGameClient implements GameClient {
 	private Player avatar;
 
 	public GraphicalGameClient() {
-		System.err.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().getId());
+		System.out.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().getId());
 		frame = new JFrame(WINDOW_TITLE + " - " + "Player ?");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(1920, 1080);
@@ -84,10 +88,83 @@ public class GraphicalGameClient implements GameClient {
 			} else {
 				return null;
 			}
+		} else if(prompt == EndTurnAction.class) {
+			final int dialogResult = JOptionPane.showOptionDialog(frame, "End of Turn Options", "End of Turn Options",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, END_OF_TURN_ACTIONS, END_OF_TURN_ACTIONS[0]);
+
+			if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(END_TURN)) {
+				return new EndTurnAction();
+			} else if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(TRADE)) {
+
+				final int playerSelection = JOptionPane.showOptionDialog(frame, "Select Player to Trade With", "Select Player to Trade With", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, gameState.getPlayers(), gameState.getPlayers()[0]);
+
+				if(playerSelection == JOptionPane.CLOSED_OPTION) {
+					return new EndTurnAction();
+				}
+
+				Player tradee = gameState.getPlayers()[playerSelection];
+
+				Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
+				Duo<JScrollPane, JList<String>> tradeePositions = generatePositionList(tradee, gameState);
+
+				JPanel panel = new JPanel();
+				panel.add(avatarPositions.a);
+				panel.add(tradeePositions.a);
+				panel.setVisible(true);
+
+				final int dialogResult2 = JOptionPane.showConfirmDialog(frame, panel, "Select Properties to Trade", JOptionPane.OK_CANCEL_OPTION);
+
+				if(dialogResult2 == JOptionPane.OK_OPTION) {
+					List<BoardPosition> positionsOffered = new ArrayList<>();
+					for(String name : avatarPositions.b.getSelectedValuesList()) {
+						positionsOffered.add(gameState.getBoardElement(name).position);
+					}
+					List<BoardPosition> positionsRequested = new ArrayList<>();
+					for(String name : tradeePositions.b.getSelectedValuesList()) {
+						positionsRequested.add(gameState.getBoardElement(name).position);
+					}
+
+					Trade sample = new Trade(avatar, tradee, 0, 0, positionsRequested, positionsOffered);
+					return new ProposeTradeAction(sample);
+				} else {
+					return new EndTurnAction();
+				}
+			} else {
+				return new EndTurnAction();
+			}
+		} else if(prompt == AcceptTradeAction.class) {
+			// Show a dialog box asking the player if they want to accept the trade
+			final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to accept? " + gameState.getProposedTrade().toString(), "Trade Offer", JOptionPane.YES_NO_OPTION);
+			if(dialogResult == JOptionPane.YES_OPTION) {
+				return new AcceptTradeAction(gameState.getProposedTrade(), true);
+			} else {
+				return new AcceptTradeAction(gameState.getProposedTrade(), false);
+			}
 		} else {
 			System.out.println("Received unrecognized prompt " + prompt.getSimpleName());
 			return null;
 		}
+	}
+
+
+
+	private Duo<JScrollPane, JList<String>> generatePositionList(Player player, GameState gameState) {
+		DefaultListModel<String> positionListBuilder = new DefaultListModel<>();
+		for(BoardElement element : gameState.getBoardElements()) {
+			if(element.owner == player) {
+				positionListBuilder.addElement(element.position.niceName);
+			}
+		}
+
+		JList<String> positionList = new JList<>(positionListBuilder);
+		positionList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		positionList.setLayoutOrientation(JList.VERTICAL);
+		positionList.setVisibleRowCount(-1);
+
+		JScrollPane positionListPane = new JScrollPane(positionList);
+		positionListPane.setPreferredSize(new Dimension(200, 200));
+
+		return new Duo<>(positionListPane, positionList);
 	}
 
 	@Override

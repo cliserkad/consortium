@@ -216,10 +216,7 @@ public enum BoardPosition implements Serializable {
 
 	@Override
 	public String toString() {
-		return "BoardPosition: {" +
-				"\n\tname: " + name() + "," +
-				"\n\tcolor: " + color + "," +
-				"\n}";
+		return niceName;
 	}
 
 	public Point2i getBoardCoords() {

@@ -1,10 +1,9 @@
 package xyz.cliserkad.consortium;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.Serializable;
 
 public class Player implements Serializable {
+
 	private static final long serialVersionUID = 20240615L;
 
 	public static final String[] PLAYER_ICONS = { "🎩", "🐈", "💰", "👽" };
@@ -50,6 +49,11 @@ public class Player implements Serializable {
 
 	public String getIcon() {
 		return PLAYER_ICONS[playerIndex];
+	}
+
+	@Override
+	public String toString() {
+		return "Player " + playerIndex + getIcon();
 	}
 
 }

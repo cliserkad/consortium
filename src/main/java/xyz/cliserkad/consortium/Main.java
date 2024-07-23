@@ -11,6 +11,7 @@ public class Main {
 	public static final int BOARD_Y_SIZE_LESS_ONE = BOARD_Y_SIZE - 1;
 	public static final int DICE_MAX = 12;
 	public static final int DICE_MIN = 2;
+	public static final String NULL_STRING = "null";
 
 	public static final Random RANDOM = new Random();
 
@@ -33,6 +34,13 @@ public class Main {
 			}
 		}
 		return out.toString();
+	}
+
+	public static String nonNullToString(Object obj) {
+		if(obj == null)
+			return NULL_STRING;
+		else
+			return obj.toString();
 	}
 
 }

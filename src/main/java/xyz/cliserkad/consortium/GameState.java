@@ -26,6 +26,8 @@ public class GameState implements Serializable {
 	 */
 	private Set<Class<? extends PlayerAction>> blockingActions;
 
+	private Trade proposedTrade = null;
+
 	/**
 	 * Version for serialization. When editing classes, update this number to the current date in YYYYMMDD format
 	 */
@@ -75,7 +77,36 @@ public class GameState implements Serializable {
 
 	public void nextTurn() {
 		movePlayer(getCurrentPlayer(), rollDice());
+		endOfTurnLoop();
 		endTurn();
+	}
+
+	public Trade getProposedTrade() {
+		return proposedTrade;
+	}
+
+	private void endOfTurnLoop() {
+		PlayerAction response;
+		do {
+			response = updateAndPoll(getCurrentPlayer(), EndTurnAction.class);
+			if(response instanceof ProposeTradeAction proposeTradeAction) {
+				broadcast("Trade proposed by " + proposeTradeAction.trade().proposer.getIcon() + " to " + proposeTradeAction.trade().acceptor.getIcon() + " " + proposeTradeAction.trade());
+				proposedTrade = proposeTradeAction.trade();
+				final PlayerAction acceptOrDeny = updateAndPoll(proposeTradeAction.trade().acceptor, AcceptTradeAction.class);
+				if(acceptOrDeny instanceof AcceptTradeAction acceptTradeAction && acceptTradeAction.accept()) {
+					proposedTrade.apply(this);
+					updatePlayers();
+					broadcast("Trade accepted!");
+				} else {
+					broadcast("Trade declined.");
+				}
+			} else {
+				if(response == null)
+					getCurrentPlayer().controller.sendMessage("Invalid action, null");
+				else if(!(response instanceof EndTurnAction))
+					getCurrentPlayer().controller.sendMessage("Invalid action, " + response.getClass().getSimpleName());
+			}
+		} while(!(response instanceof EndTurnAction));
 	}
 
 	public int nextCommunityCard() {
@@ -120,7 +151,10 @@ public class GameState implements Serializable {
 	private PlayerAction updateAndPoll(Player player, Class<? extends PlayerAction> prompt) {
 		blockingActions.add(prompt);
 		updatePlayers();
-		final PlayerAction response = player.controller.poll(player, this, prompt);
+		// because the Trade class contains a Player object with a transient GameClient,
+		// we need to get the GameClient from the Player object stored server side in GameState
+		final GameClient controller = players[player.playerIndex].controller;
+		final PlayerAction response = controller.poll(player, this, prompt);
 		blockingActions.remove(prompt);
 		updatePlayers();
 		return response;
@@ -232,6 +266,15 @@ public class GameState implements Serializable {
 
 	public BoardElement getBoardElement(BoardPosition position) {
 		return boardElements[position.ordinal()];
+	}
+
+	public BoardElement getBoardElement(String positionName) {
+		for(BoardElement element : boardElements) {
+			if(element.position.name().equals(positionName) || element.position.niceName.equals(positionName)) {
+				return element;
+			}
+		}
+		return null;
 	}
 
 	public int rollDice() {
