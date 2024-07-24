@@ -110,18 +110,26 @@ public class GameState implements Serializable {
 			} else if(response instanceof ImprovePropertyAction improveProperty) {
 				BoardElement element = getBoardElement(improveProperty.position());
 				if(element.position.logic instanceof StandardLogic logic) {
-					if(element.owner == getCurrentPlayer() && isEntireGroupOwned(element.position) && element.improvementAmt < MAX_IMPROVEMENT && getCurrentPlayer().getMoney() >= logic.costPerHouse) {
+					if(element.owner == getCurrentPlayer()) {
 						if(improveProperty.isPositive()) {
-							getCurrentPlayer().addMoney(-logic.costPerHouse);
-							element.improvementAmt++;
-							broadcast(getCurrentPlayer().getIcon() + " improved " + element.position.niceName + " for $" + logic.costPerHouse);
+							if(isEntireGroupOwned(element.position) && element.improvementAmt < MAX_IMPROVEMENT && getCurrentPlayer().getMoney() >= logic.costPerHouse) {
+								getCurrentPlayer().addMoney(-logic.costPerHouse);
+								element.improvementAmt++;
+								broadcast(getCurrentPlayer().getIcon() + " improved " + element.position.niceName + " for $" + logic.costPerHouse);
+							} else {
+								getCurrentPlayer().controller.sendMessage("You cannot improve " + element.position.niceName);
+							}
 						} else {
-							getCurrentPlayer().addMoney(logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR);
-							element.improvementAmt--;
-							broadcast(getCurrentPlayer().getIcon() + " downgraded " + element.position.niceName + " for $" + (logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR));
+							if(!element.isMortgaged()) {
+								getCurrentPlayer().addMoney(logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR);
+								element.improvementAmt--;
+								broadcast(getCurrentPlayer().getIcon() + " downgraded " + element.position.niceName + " for $" + (logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR));
+							} else {
+								getCurrentPlayer().controller.sendMessage("You cannot degrade " + element.position.niceName);
+							}
 						}
 					} else {
-						getCurrentPlayer().controller.sendMessage("You cannot improve " + element.position.niceName);
+						getCurrentPlayer().controller.sendMessage("You do not own " + element.position.niceName);
 					}
 				} else {
 					getCurrentPlayer().controller.sendMessage(element.position.niceName + " can never be improved.");
