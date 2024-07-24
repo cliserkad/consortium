@@ -87,6 +87,8 @@ public class GameState implements Serializable {
 
 	private void endOfTurnLoop() {
 		PlayerAction response;
+		if(getCurrentPlayer().getMoney() < 0)
+			broadcast(getCurrentPlayer().getIcon() + " is in debt! (" + getCurrentPlayer().getMoney() + ") They will need to raise funds or declare bankruptcy.");
 		do {
 			response = updateAndPoll(getCurrentPlayer(), EndTurnAction.class);
 			if(response instanceof ProposeTradeAction proposeTradeAction) {
@@ -130,7 +132,7 @@ public class GameState implements Serializable {
 				else if(!(response instanceof EndTurnAction))
 					getCurrentPlayer().controller.sendMessage("Invalid action, " + response.getClass().getSimpleName());
 			}
-		} while(!(response instanceof EndTurnAction));
+		} while(getCurrentPlayer().getMoney() < 0 || !(response instanceof EndTurnAction));
 	}
 
 	public int nextCommunityCard() {

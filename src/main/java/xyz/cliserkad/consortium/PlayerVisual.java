@@ -48,6 +48,11 @@ public class PlayerVisual extends JPanel implements GameStateReceiver {
 	public boolean update(GameState gameState) {
 		player = gameState.getPlayers()[player.playerIndex];
 		moneyDisplay.setText("$" + player.getMoney());
+		if(player.getMoney() < 0) {
+			moneyDisplay.setForeground(Color.RED);
+		} else {
+			moneyDisplay.setForeground(Color.GREEN);
+		}
 		repaint();
 		return true;
 	}
