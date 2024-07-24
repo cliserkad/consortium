@@ -108,7 +108,7 @@ public class GameState implements Serializable {
 			} else if(response instanceof ImprovePropertyAction improveProperty) {
 				BoardElement element = getBoardElement(improveProperty.position());
 				if(element.position.logic instanceof StandardLogic logic) {
-					if(element.owner == getCurrentPlayer() && element.improvementAmt < MAX_IMPROVEMENT && getCurrentPlayer().getMoney() >= logic.costPerHouse) {
+					if(element.owner == getCurrentPlayer() && isEntireGroupOwned(element.position) && element.improvementAmt < MAX_IMPROVEMENT && getCurrentPlayer().getMoney() >= logic.costPerHouse) {
 						if(improveProperty.isPositive()) {
 							getCurrentPlayer().addMoney(-logic.costPerHouse);
 							element.improvementAmt++;
