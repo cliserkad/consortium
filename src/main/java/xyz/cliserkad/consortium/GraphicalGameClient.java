@@ -108,9 +108,21 @@ public class GraphicalGameClient implements GameClient {
 				Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
 				Duo<JScrollPane, JList<String>> tradeePositions = generatePositionList(tradee, gameState);
 
+				SpinnerNumberModel moneyOfferedModel = new SpinnerNumberModel(0, 0, avatar.getMoney(), 10);
+				SpinnerNumberModel moneyRequestedModel = new SpinnerNumberModel(0, 0, tradee.getMoney(), 10);
+
+				JSpinner moneyOfferedSpinner = new JSpinner(moneyOfferedModel);
+				JSpinner moneyRequestedSpinner = new JSpinner(moneyRequestedModel);
+
 				JPanel panel = new JPanel();
+				panel.add(new JLabel("Properties Offered:"));
 				panel.add(avatarPositions.a);
+				panel.add(new JLabel("Properties Requested:"));
 				panel.add(tradeePositions.a);
+				panel.add(new JLabel("Money Offered :"));
+				panel.add(moneyOfferedSpinner);
+				panel.add(new JLabel("Money Requested: "));
+				panel.add(moneyRequestedSpinner);
 				panel.setVisible(true);
 
 				final int dialogResult2 = JOptionPane.showConfirmDialog(frame, panel, "Select Properties to Trade", JOptionPane.OK_CANCEL_OPTION);
@@ -125,7 +137,7 @@ public class GraphicalGameClient implements GameClient {
 						positionsRequested.add(gameState.getBoardElement(name).position);
 					}
 
-					Trade sample = new Trade(avatar, tradee, 0, 0, positionsRequested, positionsOffered);
+					Trade sample = new Trade(avatar, tradee, (Integer) moneyRequestedSpinner.getValue(), (Integer) moneyOfferedSpinner.getValue(), positionsRequested, positionsOffered);
 					return new ProposeTradeAction(sample);
 				} else {
 					return new EndTurnAction();
