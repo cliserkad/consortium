@@ -6,7 +6,7 @@
 	<groupId>xyz.cliserkad</groupId>
 	<artifactId>consortium</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<scm>
 		<connection>scm:git:${project.scm.url}</connection>
 		<developerConnection>scm:git:${project.scm.url}</developerConnection>
