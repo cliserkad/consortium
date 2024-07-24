@@ -6,6 +6,7 @@ import java.util.*;
 
 import static xyz.cliserkad.consortium.Main.*;
 import static xyz.cliserkad.consortium.PositionLogic.EMPTY_STRING;
+import static xyz.cliserkad.consortium.StandardLogic.MORTGAGE_IMPROVEMENT_AMOUNT;
 
 /**
  * Represents the state of the game, and contains logic for editing that state
@@ -120,10 +121,14 @@ public class GameState implements Serializable {
 								getCurrentPlayer().controller.sendMessage("You cannot improve " + element.position.niceName);
 							}
 						} else {
-							if(!element.isMortgaged()) {
+							if(element.improvementAmt > MORTGAGE_IMPROVEMENT_AMOUNT + 1) {
 								getCurrentPlayer().addMoney(logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR);
 								element.improvementAmt--;
 								broadcast(getCurrentPlayer().getIcon() + " downgraded " + element.position.niceName + " for $" + (logic.costPerHouse / IMPROVEMENT_REFUND_DIVISOR));
+							} else if(element.improvementAmt == MORTGAGE_IMPROVEMENT_AMOUNT + 1) {
+								getCurrentPlayer().addMoney(logic.cost / IMPROVEMENT_REFUND_DIVISOR);
+								element.improvementAmt--;
+								broadcast(getCurrentPlayer().getIcon() + " mortgaged " + element.position.niceName + " for $" + (logic.cost / IMPROVEMENT_REFUND_DIVISOR));
 							} else {
 								getCurrentPlayer().controller.sendMessage("You cannot degrade " + element.position.niceName);
 							}
