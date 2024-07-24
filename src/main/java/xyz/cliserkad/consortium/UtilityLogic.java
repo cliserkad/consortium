@@ -1,11 +1,15 @@
 package xyz.cliserkad.consortium;
 
+import static xyz.cliserkad.consortium.StandardLogic.mortgageString;
+
 public class UtilityLogic implements Purchasable {
 	public static final int[] FACTORS = { 4, 10 };
 
 	@Override
 	public String onLand(Player mover, GameState gameState) {
-		BoardElement element = gameState.getBoardElement(mover);
+		BoardElement destination = gameState.getBoardElement(mover);
+		if(destination.isMortgaged())
+			return mortgageString(mover);
 		final int rentToPay;
 		if(gameState.playerOwesRent(mover)) {
 			final int factor;
@@ -15,11 +19,11 @@ public class UtilityLogic implements Purchasable {
 				factor = FACTORS[0];
 			}
 			rentToPay = factor * gameState.getLastRoll();
-			mover.transferMoney(element.owner, rentToPay);
+			mover.transferMoney(destination.owner, rentToPay);
 		} else {
 			rentToPay = 0;
 		}
-		return StandardLogic.rentPaidString(mover, rentToPay, element);
+		return StandardLogic.rentPaidString(mover, rentToPay, destination);
 	}
 
 	@Override

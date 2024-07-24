@@ -1,6 +1,8 @@
 package xyz.cliserkad.consortium;
 
 public class StandardLogic implements Purchasable {
+	public static final int MORTGAGE_IMPROVEMENT_AMOUNT = -1;
+	public static final int MORTGAGE_RENT = 0;
 	public static final int GROUP_OWNERSHIP_COEFFICIENT = 2;
 
 	public final int cost;
@@ -16,7 +18,8 @@ public class StandardLogic implements Purchasable {
 	@Override
 	public String onLand(Player mover, GameState gameState) {
 		BoardElement destination = gameState.getBoardElement(mover);
-
+		if(destination.isMortgaged())
+			return mortgageString(mover);
 		final int rentAmount;
 		if(destination.owner == null)
 			rentAmount = 0;
@@ -33,7 +36,14 @@ public class StandardLogic implements Purchasable {
 		return rentPaidString(mover, rentAmount, destination);
 	}
 
+	public static String mortgageString(Player mover) {
+		return mover.getIcon() + " paid " + MORTGAGE_RENT + " for landing on a mortgaged property";
+	}
+
 	public static String rentPaidString(Player mover, int rentAmount, BoardElement destination) {
+		if(destination.isMortgaged())
+			return mortgageString(mover);
+
 		final String ownerString;
 		if(destination.owner == null)
 			ownerString = "THE BANK";

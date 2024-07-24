@@ -1,8 +1,8 @@
 package xyz.cliserkad.consortium;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.Serializable;
+
+import static xyz.cliserkad.consortium.StandardLogic.MORTGAGE_IMPROVEMENT_AMOUNT;
 
 /**
  * Holds game state for each BoardPosition
@@ -16,6 +16,10 @@ public class BoardElement implements Serializable {
 
 	public BoardElement(final BoardPosition position) {
 		this.position = position;
+	}
+
+	public boolean isMortgaged() {
+		return improvementAmt == MORTGAGE_IMPROVEMENT_AMOUNT;
 	}
 
 	/**
