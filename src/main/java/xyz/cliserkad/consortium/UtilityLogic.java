@@ -18,7 +18,7 @@ public class UtilityLogic implements Purchasable {
 			} else {
 				factor = FACTORS[0];
 			}
-			rentToPay = factor * gameState.getLastRoll();
+			rentToPay = factor * (gameState.getLastRoll().a + gameState.getLastRoll().b);
 			mover.transferMoney(destination.owner, rentToPay);
 		} else {
 			rentToPay = 0;

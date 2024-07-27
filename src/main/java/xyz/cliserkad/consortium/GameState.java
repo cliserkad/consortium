@@ -19,7 +19,7 @@ public class GameState implements Serializable {
 	private int chanceCardIndex = 0;
 	private Player[] players;
 	private BoardElement[] boardElements;
-	private int lastRoll = 0;
+	private Duo<Integer, Integer> lastRoll = new Duo<>(0, 0);
 	private int currentPlayer = 0;
 	private Auction auction = null;
 	/**
@@ -33,7 +33,7 @@ public class GameState implements Serializable {
 	 * Version for serialization. When editing classes, update this number to the current date in YYYYMMDD format
 	 */
 	@Serial
-	private static final long serialVersionUID = 20240615L;
+	private static final long serialVersionUID = 20240727L;
 
 	public GameState(Player[] players) {
 		boardElements = new BoardElement[BoardPosition.values().length];
@@ -77,9 +77,20 @@ public class GameState implements Serializable {
 	}
 
 	public void nextTurn() {
-		movePlayer(getCurrentPlayer(), rollDice());
+		rollAndMove();
+		for(int i = 0; i < 2; i++) {
+			if(Objects.equals(getLastRoll().a, getLastRoll().b)) {
+				broadcast(getCurrentPlayer().getIcon() + " rolled doubles! They get to roll again.");
+				rollAndMove();
+			}
+		}
 		endOfTurnLoop();
 		endTurn();
+	}
+
+	private void rollAndMove() {
+		rollDice();
+		movePlayer(getCurrentPlayer(), getLastRoll().a + getLastRoll().b);
 	}
 
 	public Trade getProposedTrade() {
@@ -327,13 +338,12 @@ public class GameState implements Serializable {
 		return null;
 	}
 
-	public int rollDice() {
-		final int out = RANDOM.nextInt(DICE_MAX - 1) + DICE_MIN;
-		lastRoll = out;
-		return out;
+	public Duo<Integer, Integer> rollDice() {
+		lastRoll = new Duo<>(RANDOM.nextInt(DICE_MIN, DICE_MAX), RANDOM.nextInt(DICE_MIN, DICE_MAX));
+		return lastRoll;
 	}
 
-	public int getLastRoll() {
+	public Duo<Integer, Integer> getLastRoll() {
 		return lastRoll;
 	}
 
