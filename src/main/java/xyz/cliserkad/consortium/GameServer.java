@@ -3,13 +3,11 @@ package xyz.cliserkad.consortium;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Holds game state, manages the game loop, sends updates to clients and processes client input.
  */
-public class GameServer extends TimerTask {
+public class GameServer {
 
 	public static final int BASE_PORT = 5555;
 
@@ -23,7 +21,6 @@ public class GameServer extends TimerTask {
 		for(int i = 0; i < playerCount; i++) {
 			NetworkedController<GameClient> controller = new NetworkedController<>(BASE_PORT + i, GameClient.class, true);
 			controllers.add(controller);
-
 		}
 
 		for(NetworkedController<GameClient> controller : controllers) {
@@ -54,27 +51,27 @@ public class GameServer extends TimerTask {
 			return;
 		}
 		GameServer server = new GameServer(playerCount);
-		Timer timer = new Timer("GameServerTimer");
-		timer.scheduleAtFixedRate(server, 6000, 6000);
+		while(server.run()) {
+		}
 	}
 
-	@Override
-	public void run() {
+	public boolean run() {
 		if(turns > 0) {
 			if(gameState.activePlayerCount() > 1) {
 				gameState.nextTurn();
 			} else if(gameState.activePlayerCount() == 1) {
 				gameState.broadcast("Game over! " + gameState.getCurrentPlayer() + " wins!");
-				System.exit(0);
+				return false;
 			} else {
 				gameState.broadcast("No Players in game. Exiting...");
-				System.exit(0);
+				return false;
 			}
 		} else {
-			System.out.println("Game Loop on Thread " + Thread.currentThread().getId());
+			System.out.println("Game Loop on Thread " + Thread.currentThread().threadId());
 			gameState.updatePlayers();
 		}
 		turns++;
+		return true;
 	}
 
 }
