@@ -17,9 +17,18 @@ public class Main {
 
 	public static final Random RANDOM = new Random();
 
-	public static void main(String[] args) throws IOException {
-		NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), args[0], Integer.parseInt(args[1]));
-		responder.start();
+	public static void main(String[] args) {
+		if(args.length == 2) {
+			try {
+				NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), args[0], Integer.parseInt(args[1]));
+				responder.start();
+			} catch(NumberFormatException e) {
+				System.err.println("Invalid port number: " + args[1]);
+			} catch(IOException e) {
+				System.err.println("Failed to connect to server at " + args[0] + ":" + args[1] + ": " + e.getMessage());
+			}
+		}
+		new GameConnector();
 	}
 
 	public static String prettifyEnumName(String input) {

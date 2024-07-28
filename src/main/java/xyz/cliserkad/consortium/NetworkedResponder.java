@@ -17,20 +17,19 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 	public static final boolean DEFAULT_IS_VERBOSE = false;
 
 	private final InterfaceInstance interfaceInstance;
-	private final Socket socket;
-	private final ObjectInputStream in;
+	public final String address;
+	public final int port;
 
-	private final ObjectOutputStream out;
-	private final List<Object> arguments;
+	private Socket socket;
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
+	private List<Object> arguments;
 	public boolean isVerbose;
 
 	public NetworkedResponder(InterfaceInstance interfaceInstance, final String ip, final int port, final boolean isVerbose) throws IOException {
 		this.interfaceInstance = interfaceInstance;
-		this.socket = new Socket(ip, port);
-		if(isVerbose)
-			System.err.println("CLIENT Connected to server at " + socket.getRemoteSocketAddress());
-		this.out = new ObjectOutputStream(socket.getOutputStream());
-		this.in = new ObjectInputStream(socket.getInputStream());
+		this.address = ip;
+		this.port = port;
 		this.arguments = new ArrayList<>();
 		this.isVerbose = isVerbose;
 	}
@@ -42,6 +41,17 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 	@Override
 	public void start() {
 		// TODO: Make this loop more robust
+		if(isVerbose)
+			System.out.println("Networked responder started on thread " + Thread.currentThread().threadId());
+		try {
+			this.socket = new Socket(address, port);
+			this.out = new ObjectOutputStream(socket.getOutputStream());
+			this.in = new ObjectInputStream(socket.getInputStream());
+			if(isVerbose)
+				System.out.println("CLIENT Connected to server at " + socket.getRemoteSocketAddress());
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
 		while(socket.isConnected()) {
 			final Object obj;
 			try {

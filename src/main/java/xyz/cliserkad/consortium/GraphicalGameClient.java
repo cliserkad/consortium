@@ -2,6 +2,8 @@ package xyz.cliserkad.consortium;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class GraphicalGameClient implements GameClient {
 	private Player avatar;
 
 	public GraphicalGameClient() {
-		System.out.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().getId());
+		System.out.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().threadId());
 		frame = new JFrame(WINDOW_TITLE + " - " + "Player ?");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(1920, 1080);
@@ -49,6 +51,13 @@ public class GraphicalGameClient implements GameClient {
 			), constraints);
 
 		update(new GameState(new Player[] { new Player(this) }));
+
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				kill();
+			}
+		});
 
 		frame.add(panel);
 		frame.setVisible(true);
