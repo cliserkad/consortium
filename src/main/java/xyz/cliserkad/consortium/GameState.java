@@ -255,7 +255,7 @@ public class GameState implements Serializable {
 
 			while((auction.bidders.size() == 1 && auction.bid <= 0) || auction.bidders.size() > 1) {
 				PlayerAction response = updateAndPoll(auction.currentBidder, BidAction.class);
-				if(response instanceof BidAction bidAction && bidAction.amount() > auction.bid) {
+				if(response instanceof BidAction bidAction && bidAction.amount() > auction.bid && auction.currentBidder.getMoney() >= bidAction.amount()) {
 					auction.bid = bidAction.amount();
 					auction.bids.add(bidAction);
 					broadcast(auction.currentBidder.getIcon() + " bid $" + auction.bid + " on " + element.position.niceName);
