@@ -6,7 +6,11 @@ Install Java 21 or later:
 https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-2103-lts--see-previous-releases  
 Download Latest Jar:  
 https://github.com/cliserkad/consortium/releases/latest/download/consortium.jar  
-Run the jar from a terminal, providing the server's ip and port:  
+Run the jar from a terminal:
+```
+java -jar consortium.jar 
+```
+Optionally, you can provide the ip and port as command line arguments:
 ```
 java -jar consortium.jar <ip> <port>
 ```
