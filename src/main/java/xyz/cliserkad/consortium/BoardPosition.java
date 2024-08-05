@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,10 @@ public enum BoardPosition implements Serializable {
 		ATLANTIC_AVENUE.color
 		, new StandardLogic(280, 150, new int[]{ 24, 120, 360, 850, 1025, 1200 })
 	),
-	GO_TO_JAIL,
+	GO_TO_JAIL(
+		Color.WHITE,
+		new JailLogic()
+	),
 	PACIFIC_AVENUE(
 		new Color(0x1DE81D)
 		, new StandardLogic(300, 200, new int[]{ 26, 130, 390, 900, 1100, 1275 })
@@ -164,7 +168,8 @@ public enum BoardPosition implements Serializable {
 		, new StandardLogic(400, 200, new int[]{ 50, 200, 600, 1400, 1700, 2000 })
 	);
 
-	private static final long serialVersionUID = 20240615L;
+	@Serial
+	private static final long serialVersionUID = 20240805L;
 
 	public final Color color;
 	public final PositionLogic logic;

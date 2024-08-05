@@ -61,7 +61,7 @@ public class ChanceLogic implements PositionLogic {
 			case BANK_ERROR -> player.addMoney(200);
 			case GET_OUT_OF_JAIL -> gameState.broadcast("Nah, you're stuck in jail.");
 			case GO_BACK_THREE -> gameState.broadcast("TODO: implement backwards movement");
-			case GO_TO_JAIL -> gameState.movePlayer(player, BoardPosition.JAIL, 0);
+			case GO_TO_JAIL -> gameState.sendToJail(player, "pulling a Chance card.");
 			case GEN_REPAIRS -> {
 				int houseCost = 40;
 				int hotelCost = 115;

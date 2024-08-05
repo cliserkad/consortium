@@ -20,6 +20,7 @@ public class GameState implements Serializable {
 	private Player[] players;
 	private BoardElement[] boardElements;
 	private Duo<Integer, Integer> lastRoll = new Duo<>(0, 0);
+	private int numDoubles = 0;
 	private int currentPlayer = 0;
 	private Auction auction = null;
 	/**
@@ -33,7 +34,7 @@ public class GameState implements Serializable {
 	 * Version for serialization. When editing classes, update this number to the current date in YYYYMMDD format
 	 */
 	@Serial
-	private static final long serialVersionUID = 20240727L;
+	private static final long serialVersionUID = 20240805L;
 
 	public GameState(Player[] players) {
 		boardElements = new BoardElement[BoardPosition.values().length];
@@ -77,18 +78,42 @@ public class GameState implements Serializable {
 	}
 
 	public void nextTurn() {
+		numDoubles = 0;
 		rollAndMove();
-		for(int i = 0; i < 2; i++) {
-			if(Objects.equals(getLastRoll().a, getLastRoll().b)) {
-				broadcast(getCurrentPlayer().getIcon() + " rolled doubles! They get to roll again.");
-				rollAndMove();
-			}
+		while(isLastRollDoubles() && !(++numDoubles >= JAIL_DOUBLES)) {
+			broadcast(getCurrentPlayer().getIcon() + " rolled doubles! They get to roll again.");
+			rollAndMove();
+		}
+		if(numDoubles >= JAIL_DOUBLES) {
+			sendToJail(getCurrentPlayer(), "rolling doubles " + numDoubles + " times in a row!");
 		}
 		endOfTurnLoop();
 		endTurn();
 	}
 
+	public void sendToJail(Player player, String reason) {
+		broadcast(player.getIcon() + " was sent to jail for " + reason);
+		player.setPosition(BoardPosition.JAIL, this);
+		player.newJailSentence();
+		updatePlayers();
+	}
+
+	public boolean isLastRollDoubles() {
+		return Objects.equals(getLastRoll().a, getLastRoll().b);
+	}
+
 	private void rollAndMove() {
+		if(getCurrentPlayer().getRemainingJailTurns() > 0) {
+			rollDice();
+			if(isLastRollDoubles()) {
+				broadcast(getCurrentPlayer().getIcon() + " rolled doubles! They are free from jail.");
+				getCurrentPlayer().endJailSentence();
+			} else {
+				broadcast(getCurrentPlayer().getIcon() + " did not roll doubles. They remain in jail.");
+				getCurrentPlayer().reduceJailSentence();
+			}
+			updatePlayers();
+		}
 		rollDice();
 		movePlayer(getCurrentPlayer(), getLastRoll().a + getLastRoll().b);
 	}

@@ -35,7 +35,7 @@ public class CommunityChestLogic implements PositionLogic {
 			case DOCTOR_FEE, SCHOOL_TAX -> player.addMoney(-50);
 			case STOCK_DIVIDEND -> player.addMoney(50);
 			case GET_OUT_OF_JAIL -> gameState.broadcast("Nah, you're stuck in jail.");
-			case GO_TO_JAIL -> gameState.movePlayer(player, BoardPosition.JAIL, 0);
+			case GO_TO_JAIL -> gameState.sendToJail(player, "pulling a Community Chest card.");
 			case HOLIDAY_FUND, LIFE_INSURANCE, INHERITANCE -> player.addMoney(100);
 			case INCOME_TAX_REFUND -> player.addMoney(20);
 			case BIRTHDAY_PARTY -> {

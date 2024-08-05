@@ -14,6 +14,8 @@ public class Main {
 	public static final String NULL_STRING = "null";
 	public static final int MAX_IMPROVEMENT = 5;
 	public static final int IMPROVEMENT_REFUND_DIVISOR = 2;
+	public static final int JAIL_TURNS = 3;
+	public static final int JAIL_DOUBLES = 3;
 
 	public static final Random RANDOM = new Random();
 
