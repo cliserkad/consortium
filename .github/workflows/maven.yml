@@ -1,25 +1,28 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+# This workflow will test this Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
 name: Test with Maven
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          # this distribution is cached by github actions
           distribution: 'temurin'
+          # jdk version to use, specified in pom.xml
+          java-version: '21'
+          # use the github actions cached jdk if available.
           check-latest: false
-          cache: maven
-      - name: Build with Maven
+      - name: mvn test
+        # maven almost always fails to generate sources correctly without cleaning
+        # transfer progress is disabled to avoid spamming the log with progress bars
         run: mvn clean test --file pom.xml --no-transfer-progress
