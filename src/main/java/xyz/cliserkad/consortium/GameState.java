@@ -108,14 +108,16 @@ public class GameState implements Serializable {
 			if(isLastRollDoubles()) {
 				broadcast(getCurrentPlayer().getIcon() + " rolled doubles! They are free from jail.");
 				getCurrentPlayer().endJailSentence();
+				movePlayer(getCurrentPlayer(), getLastRoll().a + getLastRoll().b);
 			} else {
 				broadcast(getCurrentPlayer().getIcon() + " did not roll doubles. They remain in jail.");
 				getCurrentPlayer().reduceJailSentence();
 			}
 			updatePlayers();
+		} else {
+			rollDice();
+			movePlayer(getCurrentPlayer(), getLastRoll().a + getLastRoll().b);
 		}
-		rollDice();
-		movePlayer(getCurrentPlayer(), getLastRoll().a + getLastRoll().b);
 	}
 
 	public Trade getProposedTrade() {
