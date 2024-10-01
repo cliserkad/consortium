@@ -1,5 +1,6 @@
 package xyz.cliserkad.consortium;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Random;
 
@@ -16,6 +17,13 @@ public class Main {
 	public static final int IMPROVEMENT_REFUND_DIVISOR = 2;
 	public static final int JAIL_TURNS = 3;
 	public static final int JAIL_DOUBLES = 3;
+	public static final double RED_LUMINANCE_FACTOR = 0.299;
+	public static final double GREEN_LUMINANCE_FACTOR = 0.587;
+	public static final double BLUE_LUMINANCE_FACTOR = 0.114;
+	public static final double MAX_RED_LUMINANCE = RED_LUMINANCE_FACTOR * 255;
+	public static final double MAX_GREEN_LUMINANCE = GREEN_LUMINANCE_FACTOR * 255;
+	public static final double MAX_BLUE_LUMINANCE = BLUE_LUMINANCE_FACTOR * 255;
+	public static final double MAX_LUMINANCE = MAX_RED_LUMINANCE + MAX_GREEN_LUMINANCE + MAX_BLUE_LUMINANCE;
 
 	public static final Random RANDOM = new Random();
 
@@ -58,6 +66,20 @@ public class Main {
 			return NULL_STRING;
 		else
 			return obj.toString();
+	}
+
+	public static Color textColorForBackground(Color backgroundColor) {
+		if(isColorBright(backgroundColor))
+			return Color.BLACK;
+		else
+			return Color.WHITE;
+	}
+
+	public static boolean isColorBright(Color color) {
+		final int maxColorValue = 255; // assume sRGB 8 bits per pixel
+		if(!color.getColorSpace().isCS_sRGB())
+			System.out.println("Color is not in sRGB color space. Text color may not be calculated correctly.");
+		return (RED_LUMINANCE_FACTOR * color.getRed() + GREEN_LUMINANCE_FACTOR * color.getGreen() + BLUE_LUMINANCE_FACTOR * color.getBlue()) / MAX_LUMINANCE > 0.5;
 	}
 
 }

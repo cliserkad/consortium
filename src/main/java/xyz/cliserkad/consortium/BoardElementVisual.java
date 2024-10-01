@@ -5,8 +5,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static xyz.cliserkad.consortium.Main.textColorForBackground;
+
 public class BoardElementVisual extends JPanel implements GameStateReceiver {
-	public static final String[] IMPROVEMENT_LABELS = {"🔐", "", "🏠", "🏠🏡", "🏠🏡🏠", "🏠🏡🏠🏡", "🏨"};
+
+	public static final String[] IMPROVEMENT_LABELS = { "🔐", "", "🏠", "🏠🏡", "🏠🏡🏠", "🏠🏡🏠🏡", "🏨" };
 
 	private BoardElement element;
 
@@ -31,8 +34,8 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 		constraints.anchor = GridBagConstraints.NORTH;
 
 		nameLabel = new JLabel(" " + element.position.niceName + " ", SwingConstants.CENTER);
-		nameLabel.setForeground(Color.BLACK);
-		nameLabel.setBackground(Color.WHITE);
+		nameLabel.setForeground(textColorForBackground(element.position.color));
+		nameLabel.setBackground(element.position.color);
 		nameLabel.setOpaque(true);
 		constraints.gridy = 1;
 		constraints.gridwidth = 4;
@@ -40,15 +43,15 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 
 		if(element.position.logic instanceof Purchasable purchasable) {
 			purchaseLabel = new JLabel("Cost: " + purchasable.cost(), SwingConstants.CENTER);
-			purchaseLabel.setForeground(Color.BLACK);
-			purchaseLabel.setBackground(Color.WHITE);
+			purchaseLabel.setForeground(textColorForBackground(element.position.color));
+			purchaseLabel.setBackground(element.position.color);
 			purchaseLabel.setOpaque(true);
 			constraints.gridy = 2;
 			add(purchaseLabel, constraints);
 
 			improvementLabel = new JLabel(IMPROVEMENT_LABELS[1], SwingConstants.CENTER);
 			improvementLabel.setForeground(Color.BLACK);
-			improvementLabel.setBackground(Color.WHITE);
+			improvementLabel.setBackground(element.position.color);
 			improvementLabel.setOpaque(true);
 			constraints.gridy = 3;
 			add(improvementLabel, constraints);

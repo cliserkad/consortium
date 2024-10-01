@@ -43,18 +43,14 @@ public class GraphicalGameClient implements GameClient {
 		printOutput.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
 		printOutput.setEditable(false);
 		System.setOut(new PrintStream(new TextAreaOutputStream(printOutput)));
-		panel.add(
-			new JScrollPane(
-				printOutput,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-			),
-			constraints
-		);
+		panel.add(new JScrollPane(printOutput, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), constraints);
 
-		update(new GameState(new ArrayList<>()));
+		List<GameClient> self = new ArrayList<>();
+		self.add(this);
+		update(new GameState(self));
 
 		frame.addWindowListener(new WindowAdapter() {
+
 			@Override
 			public void windowClosing(WindowEvent e) {
 				kill();
@@ -101,8 +97,7 @@ public class GraphicalGameClient implements GameClient {
 				return null;
 			}
 		} else if(prompt == EndTurnAction.class) {
-			final int dialogResult = JOptionPane.showOptionDialog(frame, "End of Turn Options", "End of Turn Options",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, END_OF_TURN_ACTIONS, END_OF_TURN_ACTIONS[0]);
+			final int dialogResult = JOptionPane.showOptionDialog(frame, "End of Turn Options", "End of Turn Options", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, END_OF_TURN_ACTIONS, END_OF_TURN_ACTIONS[0]);
 
 			if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(END_TURN)) {
 				return new EndTurnAction();
@@ -187,8 +182,6 @@ public class GraphicalGameClient implements GameClient {
 			return null;
 		}
 	}
-
-
 
 	private Duo<JScrollPane, JList<String>> generatePositionList(Player player, GameState gameState) {
 		DefaultListModel<String> positionListBuilder = new DefaultListModel<>();
