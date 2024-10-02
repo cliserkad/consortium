@@ -23,6 +23,7 @@ public class GraphicalGameClient implements GameClient {
 	private final JPanel panel;
 	private boolean isInitialized = false;
 	private List<BoardElementVisual> boardElementVisuals = new ArrayList<>();
+	private List<PlayerVisual> staticPlayerVisuals = new ArrayList<>();
 	private Player avatar;
 
 	public GraphicalGameClient() {
@@ -235,6 +236,32 @@ public class GraphicalGameClient implements GameClient {
 			}
 			isInitialized = true;
 		} else {
+			if(staticPlayerVisuals.size() != gameState.getPlayers().length) {
+				// remove all visuals we've added before
+				for(PlayerVisual visual : staticPlayerVisuals)
+					panel.remove(visual);
+				staticPlayerVisuals.clear();
+
+				// add a new visual for each player
+				GridBagConstraints constraints = new GridBagConstraints();
+				constraints.gridwidth = 1;
+				constraints.gridheight = 1;
+				constraints.weightx = 1;
+				constraints.weighty = 1;
+				constraints.gridx = 4;
+				constraints.gridy = 9;
+				constraints.fill = GridBagConstraints.BOTH;
+				constraints.anchor = GridBagConstraints.CENTER;
+				for(int i = 0; i < gameState.getPlayers().length; i++) {
+					constraints.gridx = 2 + (i * 2);
+					PlayerVisual visual = new PlayerVisual(gameState.getPlayers()[i]);
+					panel.add(visual, constraints);
+					staticPlayerVisuals.add(visual);
+				}
+			}
+			for(PlayerVisual visual : staticPlayerVisuals) {
+				visual.update(gameState);
+			}
 			for(BoardElementVisual visual : boardElementVisuals) {
 				visual.update(gameState);
 			}
