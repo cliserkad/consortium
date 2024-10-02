@@ -32,18 +32,22 @@ public class GraphicalGameClient implements GameClient {
 		frame.setSize(1920, 1080);
 		panel = new JPanel(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.weightx = 0.5;
+		constraints.weighty = 0.5;
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 
-		constraints.gridy = 1;
-		constraints.gridx = 1;
-		constraints.gridwidth = 9;
-		constraints.gridheight = 5;
+		constraints.gridy = 2;
+		constraints.gridx = 2;
+		constraints.gridwidth = 7;
+		constraints.gridheight = 7;
+		constraints.weighty = 0;
 		JTextArea printOutput = new JTextArea();
 		printOutput.setFont(new Font("Arial Unicode MS", Font.PLAIN, 20));
 		printOutput.setEditable(false);
 		System.setOut(new PrintStream(new TextAreaOutputStream(printOutput)));
 		panel.add(new JScrollPane(printOutput, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), constraints);
+		constraints.weighty = 0.5;
 
 		List<GameClient> self = new ArrayList<>();
 		self.add(this);
