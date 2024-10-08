@@ -50,7 +50,7 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 			add(purchaseLabel, constraints);
 
 			improvementLabel = new JLabel(IMPROVEMENT_LABELS[1], SwingConstants.CENTER);
-			improvementLabel.setForeground(Color.BLACK);
+			improvementLabel.setForeground(textColorForBackground(element.position.color));
 			improvementLabel.setBackground(element.position.color);
 			improvementLabel.setOpaque(true);
 			constraints.gridy = 3;
