@@ -24,6 +24,10 @@ jobs:
           java-version: '21'
           # use the github actions cached jdk if available.
           check-latest: false
+      - name: Generate Maven settings.xml
+        uses: s4u/maven-settings-action@v3.0.0
+        with:
+          servers: '[{"id": "github-smp", "username": "${{ secrets.USERNAME }}", "password": "${{ secrets.TOKEN }}"}]'
       - name: Package client jar
         id: package
         run: mvn -B clean package --file pom.xml --no-transfer-progress

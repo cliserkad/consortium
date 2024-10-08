@@ -1,5 +1,7 @@
 package xyz.cliserkad.consortium;
 
+import xyz.cliserkad.util.Duo;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -190,7 +192,7 @@ public class GraphicalGameClient implements GameClient {
 		}
 	}
 
-	private Duo<JScrollPane, JList<String>> generatePositionList(Player player, GameState gameState) {
+	private static Duo<JScrollPane, JList<String>> generatePositionList(Player player, GameState gameState) {
 		DefaultListModel<String> positionListBuilder = new DefaultListModel<>();
 		for(BoardElement element : gameState.getBoardElements()) {
 			if(element.owner == player) {

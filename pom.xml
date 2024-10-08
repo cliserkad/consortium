@@ -31,7 +31,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>consortium</finalName>
+							<finalName>${project.artifactId}</finalName>
 							<archive>
 								<manifest>
 									<mainClass>xyz.cliserkad.consortium.Main</mainClass>
@@ -60,7 +60,8 @@
 				</executions>
 				<configuration>
 					<generateGitPropertiesFile>true</generateGitPropertiesFile>
-					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+					<generateGitPropertiesFilename>
+						${project.build.outputDirectory}/git.properties
 					</generateGitPropertiesFilename>
 					<includeOnlyProperties>
 						<includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
@@ -71,5 +72,18 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<dependencies>
+		<dependency>
+			<groupId>xyz.cliserkad</groupId>
+			<artifactId>smp</artifactId>
+			<version>0.0.22</version>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>github-smp</id>
+			<name>GitHub Packages; cliserkad/smp</name>
+			<url>https://maven.pkg.github.com/cliserkad/smp</url>
+		</repository>
+	</repositories>
 </project>

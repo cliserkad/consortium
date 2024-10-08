@@ -1,5 +1,7 @@
 package xyz.cliserkad.consortium;
 
+import xyz.cliserkad.util.Duo;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
