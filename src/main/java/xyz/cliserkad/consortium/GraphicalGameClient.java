@@ -8,9 +8,10 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static xyz.cliserkad.consortium.Main.INITIAL_WINDOW_SIZE_FACTOR;
+
 public class GraphicalGameClient implements GameClient {
 
-	public static final String WINDOW_TITLE = "Consortium";
 	public static final String END_TURN = "End Turn";
 	public static final String TRADE = "Trade";
 	public static final String DECLARE_BANKRUPTCY = "Declare Bankruptcy";
@@ -28,9 +29,10 @@ public class GraphicalGameClient implements GameClient {
 
 	public GraphicalGameClient() {
 		System.out.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().threadId());
-		frame = new JFrame(WINDOW_TITLE + " - " + "Player ?");
+		frame = new JFrame(Main.TITLE + " - " + "Player ?");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1920, 1080);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		frame.setSize((int) (screenSize.width * INITIAL_WINDOW_SIZE_FACTOR), (int) (screenSize.height * INITIAL_WINDOW_SIZE_FACTOR));
 		panel = new JPanel(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.weightx = 0.5;
@@ -73,7 +75,7 @@ public class GraphicalGameClient implements GameClient {
 	}
 
 	private void setTitle(int playerIndex) {
-		frame.setTitle(WINDOW_TITLE + " - Player " + playerIndex + " " + Player.PLAYER_ICONS[playerIndex]);
+		frame.setTitle(Main.TITLE + " - Player " + playerIndex + " " + Player.PLAYER_ICONS[playerIndex]);
 	}
 
 	@Override
