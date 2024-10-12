@@ -69,24 +69,35 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 					return;
 				}
 
-				List<Class<?>> parameterTypes = new ArrayList<>();
-				for(Object argument : arguments) {
-					parameterTypes.add(argument.getClass());
-				}
+				// Always respond to ping() call with "pong!"
+				if(cmd.methodName.equals("ping")) {
+					try {
+						out.writeObject(NetworkedController.EXPECTED_PING_RESPONSE);
+					} catch(IOException e) {
+						panic(e);
+						return;
+					}
+				} else {
 
-				final Method targetMethod;
-				try {
-					targetMethod = interfaceInstance.getClass().getMethod(cmd.methodName, parameterTypes.toArray(new Class<?>[] {}));
-				} catch(NoSuchMethodException e) {
-					panic(e);
-					return;
-				}
+					List<Class<?>> parameterTypes = new ArrayList<>();
+					for(Object argument : arguments) {
+						parameterTypes.add(argument.getClass());
+					}
 
-				try {
-					out.writeObject(targetMethod.invoke(interfaceInstance, arguments.toArray()));
-				} catch(IllegalAccessException | IOException | InvocationTargetException e) {
-					panic(e);
-					return;
+					final Method targetMethod;
+					try {
+						targetMethod = interfaceInstance.getClass().getMethod(cmd.methodName, parameterTypes.toArray(new Class<?>[] {}));
+					} catch(NoSuchMethodException e) {
+						panic(e);
+						return;
+					}
+
+					try {
+						out.writeObject(targetMethod.invoke(interfaceInstance, arguments.toArray()));
+					} catch(IllegalAccessException | IOException | InvocationTargetException e) {
+						panic(e);
+						return;
+					}
 				}
 
 				arguments.clear();

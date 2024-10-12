@@ -13,8 +13,11 @@ import java.net.Socket;
 public class NetworkedController<InterfaceClass> extends Thread implements InvocationHandler {
 
 	public static final boolean DEFAULT_IS_VERBOSE = false;
+	public static final String EXPECTED_PING_RESPONSE = "pong!";
+	public static final String PING_FAILURE_MESSAGE = "Failed to ping ";
 
 	public final InterfaceClass proxy;
+	public final Class<InterfaceClass> interfaceClass;
 	public final int port;
 
 	/**
@@ -34,6 +37,7 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 		this.port = port;
 		this.isVerbose = isVerbose;
 
+		this.interfaceClass = interfaceClass;
 		// trust that the standard library actually works
 		proxy = (InterfaceClass) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[] { interfaceClass }, this);
 	}
@@ -178,6 +182,17 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 				System.err.println("Sleep interrupted, continuing...");
 			}
 		}
+	}
+
+	public boolean ping() throws Throwable {
+		return invoke(proxy, Pingable.class.getMethod("ping"), new Object[0]).equals(EXPECTED_PING_RESPONSE);
+	}
+
+	public static String pingFailureMessage(NetworkedController<?> controller) {
+		if(controller == null)
+			return PING_FAILURE_MESSAGE + "null";
+		else
+			return PING_FAILURE_MESSAGE + controller;
 	}
 
 	@Override
