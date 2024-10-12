@@ -43,11 +43,11 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 	}
 
 	@Override
-	public void start() {
-		start0();
+	public void run() {
+		run0();
 	}
 
-	private void start0() {
+	private void run0() {
 		try {
 			if(serverSocket != null)
 				serverSocket.close();
@@ -65,7 +65,7 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 				e.printStackTrace();
 			}
 			sleep();
-			start0();
+			run0();
 		}
 	}
 
@@ -81,7 +81,7 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 		if(callNum > 3) {
 			if(isVerbose)
 				System.err.println("Multiple IOExceptions encountered. Attempting to restart connection...");
-			start0();
+			run0();
 		}
 
 		try {
@@ -178,6 +178,11 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 				System.err.println("Sleep interrupted, continuing...");
 			}
 		}
+	}
+
+	@Override
+	public String toString() {
+		return NetworkedController.class.getName() + "\nProxy:" + proxy.getClass().getSuperclass() + "\nPort: " + port + "\nClient Address: " + clientSocket.getRemoteSocketAddress() + "\nVerbose?: " + isVerbose;
 	}
 
 }
