@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,8 @@ public class GraphicalGameClient implements GameClient {
 	private List<BoardElementVisual> boardElementVisuals = new ArrayList<>();
 	private List<PlayerVisual> staticPlayerVisuals = new ArrayList<>();
 	private Player avatar;
+	// allow us to save a game state for debug purposes
+	private boolean saveNextGameState = false;
 
 	public GraphicalGameClient() {
 		System.out.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().threadId());
@@ -53,6 +58,15 @@ public class GraphicalGameClient implements GameClient {
 		System.setOut(new PrintStream(new TextAreaOutputStream(printOutput)));
 		panel.add(new JScrollPane(printOutput, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), constraints);
 		constraints.weighty = 0.5;
+
+		constraints.gridy = 1;
+		constraints.gridx = 1;
+		constraints.gridwidth = 1;
+		constraints.gridheight = 1;
+		constraints.weightx = 0.5;
+		JButton saveGameStateButton = new JButton("Save Game State");
+		saveGameStateButton.addActionListener(e -> saveNextGameState = true);
+		panel.add(saveGameStateButton, constraints);
 
 		List<GameClient> self = new ArrayList<>();
 		self.add(this);
@@ -123,8 +137,8 @@ public class GraphicalGameClient implements GameClient {
 				Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
 				Duo<JScrollPane, JList<String>> tradeePositions = generatePositionList(tradee, gameState);
 
-				SpinnerNumberModel moneyOfferedModel = new SpinnerNumberModel(0, 0, avatar.getMoney(), 10);
-				SpinnerNumberModel moneyRequestedModel = new SpinnerNumberModel(0, 0, tradee.getMoney(), 10);
+				SpinnerNumberModel moneyOfferedModel = new SpinnerNumberModel(0, 0, Math.min(0, avatar.getMoney()), 10);
+				SpinnerNumberModel moneyRequestedModel = new SpinnerNumberModel(0, 0, Math.min(0, tradee.getMoney()), 10);
 
 				JSpinner moneyOfferedSpinner = new JSpinner(moneyOfferedModel);
 				JSpinner moneyRequestedSpinner = new JSpinner(moneyRequestedModel);
@@ -223,6 +237,18 @@ public class GraphicalGameClient implements GameClient {
 
 	@Override
 	public boolean update(GameState gameState) {
+		if(saveNextGameState) {
+			try {
+				File file = new File(gameState.hashCode() + "_GameState.ser");
+				FileOutputStream out = new FileOutputStream(file);
+				ObjectOutputStream objectOutputStream = new ObjectOutputStream(out);
+				objectOutputStream.writeObject(gameState);
+				System.out.println(file.getAbsolutePath() + " saved");
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			saveNextGameState = false;
+		}
 		if(!isInitialized) {
 			GridBagConstraints constraints = new GridBagConstraints();
 			constraints.gridwidth = 1;
