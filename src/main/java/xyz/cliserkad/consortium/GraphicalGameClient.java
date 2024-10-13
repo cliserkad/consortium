@@ -137,8 +137,8 @@ public class GraphicalGameClient implements GameClient {
 				Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
 				Duo<JScrollPane, JList<String>> tradeePositions = generatePositionList(tradee, gameState);
 
-				SpinnerNumberModel moneyOfferedModel = new SpinnerNumberModel(0, 0, Math.min(0, avatar.getMoney()), 10);
-				SpinnerNumberModel moneyRequestedModel = new SpinnerNumberModel(0, 0, Math.min(0, tradee.getMoney()), 10);
+				SpinnerNumberModel moneyOfferedModel = new SpinnerNumberModel(0, 0, Math.max(0, avatar.getMoney()), 10);
+				SpinnerNumberModel moneyRequestedModel = new SpinnerNumberModel(0, 0, Math.max(0, tradee.getMoney()), 10);
 
 				JSpinner moneyOfferedSpinner = new JSpinner(moneyOfferedModel);
 				JSpinner moneyRequestedSpinner = new JSpinner(moneyRequestedModel);
