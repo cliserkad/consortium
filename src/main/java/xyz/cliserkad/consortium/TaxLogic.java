@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 public class TaxLogic implements PositionLogic {
+
 	public static final int LUXURY_TAX_AMOUNT = 100;
 	public static final int INCOME_TAX_AMOUNT = 200;
 

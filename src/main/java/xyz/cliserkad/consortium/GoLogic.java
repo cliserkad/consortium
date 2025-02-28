@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 public class GoLogic implements PositionLogic {
+
 	public static final int PASS_GO_REWARD = 200;
 
 	@Override

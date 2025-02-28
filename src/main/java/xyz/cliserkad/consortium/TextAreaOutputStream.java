@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.io.OutputStream;
 
 public class TextAreaOutputStream extends OutputStream {
+
 	private final JTextArea textArea;
 
 	public TextAreaOutputStream(final JTextArea desintation) {

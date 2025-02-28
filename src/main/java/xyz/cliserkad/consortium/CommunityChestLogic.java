@@ -5,6 +5,7 @@ public class CommunityChestLogic implements PositionLogic {
 	public static final CommunityChestLogic INSTANCE = new CommunityChestLogic();
 
 	enum CommunityCard {
+
 		ADVANCE_TO_GO,
 		BANK_ERROR,
 		DOCTOR_FEE,

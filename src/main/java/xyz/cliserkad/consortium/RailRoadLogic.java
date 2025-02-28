@@ -3,6 +3,7 @@ package xyz.cliserkad.consortium;
 import static xyz.cliserkad.consortium.StandardLogic.mortgageString;
 
 public class RailRoadLogic implements Purchasable {
+
 	public static final int[] RAILROAD_RENT = { 0, 25, 50, 100, 200 };
 	public static final int RAILROAD_COST = 200;
 

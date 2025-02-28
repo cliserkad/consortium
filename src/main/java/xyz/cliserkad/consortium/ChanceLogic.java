@@ -5,6 +5,7 @@ public class ChanceLogic implements PositionLogic {
 	public static final ChanceLogic INSTANCE = new ChanceLogic();
 
 	enum ChanceCard {
+
 		ADVANCE_TO_BOARDWALK,
 		ADVANCE_TO_GO,
 		ADVANCE_TO_ILLINOIS_AVE,

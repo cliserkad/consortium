@@ -3,6 +3,7 @@ package xyz.cliserkad.consortium;
 import static xyz.cliserkad.consortium.StandardLogic.mortgageString;
 
 public class UtilityLogic implements Purchasable {
+
 	public static final int[] FACTORS = { 4, 10 };
 
 	@Override

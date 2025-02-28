@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Auction implements Serializable {
+
 	@Serial
 	private static final long serialVersionUID = 20240714;
 

@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 public class StandardLogic implements Purchasable {
+
 	public static final int MORTGAGE_IMPROVEMENT_AMOUNT = -1;
 	public static final int MORTGAGE_RENT = 0;
 	public static final int GROUP_OWNERSHIP_COEFFICIENT = 2;

@@ -1,6 +1,7 @@
 package xyz.cliserkad.consortium;
 
 public final class PlayerInput {
+
 	private final Player executor;
 	private final EndTurnAction action;
 

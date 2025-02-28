@@ -8,6 +8,7 @@ import static xyz.cliserkad.consortium.StandardLogic.MORTGAGE_IMPROVEMENT_AMOUNT
  * Holds game state for each BoardPosition
  */
 public class BoardElement implements Serializable {
+
 	private static final long serialVersionUID = 20240615L;
 
 	public final BoardPosition position;

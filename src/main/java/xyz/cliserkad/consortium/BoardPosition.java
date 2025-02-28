@@ -13,160 +13,47 @@ import static xyz.cliserkad.consortium.Main.*;
  * Represents the static data for each position on the board
  */
 public enum BoardPosition implements Serializable {
-	GO(
-		Color.WHITE,
-		new GoLogic()
-	),
-	MEDITERRANEAN_AVENUE(
-		  new Color(0x8B4513)
-		, new StandardLogic(60, 50, new int[]{ 2, 10, 30, 90, 160, 250 })
-	),
-	COMMUNITY_CHEST_1(
-		Color.WHITE,
-		CommunityChestLogic.INSTANCE
-	),
-	BALTIC_AVENUE(
-		MEDITERRANEAN_AVENUE.color
-		, new StandardLogic(60, 50, new int[]{ 4, 20, 60, 180, 320, 450 })
-	),
-	INCOME_TAX(
-		Color.WHITE,
-		TaxLogic.INCOME_TAX
-	),
-	READING_RAILROAD(
-		Color.BLACK,
-		new RailRoadLogic()
-	),
-	ORIENTAL_AVENUE(
-		new Color(0xB2FFE8)
-		, new StandardLogic(100, 50, new int[] {6, 30, 90, 270, 400, 550 })
-	),
-	CHANCE_1(
-		Color.WHITE,
-		ChanceLogic.INSTANCE
-	),
-	VERMONT_AVENUE(
-		ORIENTAL_AVENUE.color
-		, new StandardLogic(100, 50, new int[]{ 6, 30, 90, 270, 400, 550 })
-	),
-	CONNECTICUT_AVENUE(
-		ORIENTAL_AVENUE.color
-		, new StandardLogic(120, 50, new int[]{ 8, 40, 100, 300, 450, 600 })
-	),
+
+	GO(Color.WHITE, new GoLogic()),
+	MEDITERRANEAN_AVENUE(new Color(0x8B4513), new StandardLogic(60, 50, new int[] { 2, 10, 30, 90, 160, 250 })),
+	COMMUNITY_CHEST_1(Color.WHITE, CommunityChestLogic.INSTANCE),
+	BALTIC_AVENUE(MEDITERRANEAN_AVENUE.color, new StandardLogic(60, 50, new int[] { 4, 20, 60, 180, 320, 450 })),
+	INCOME_TAX(Color.WHITE, TaxLogic.INCOME_TAX),
+	READING_RAILROAD(Color.BLACK, new RailRoadLogic()),
+	ORIENTAL_AVENUE(new Color(0xB2FFE8), new StandardLogic(100, 50, new int[] { 6, 30, 90, 270, 400, 550 })),
+	CHANCE_1(Color.WHITE, ChanceLogic.INSTANCE),
+	VERMONT_AVENUE(ORIENTAL_AVENUE.color, new StandardLogic(100, 50, new int[] { 6, 30, 90, 270, 400, 550 })),
+	CONNECTICUT_AVENUE(ORIENTAL_AVENUE.color, new StandardLogic(120, 50, new int[] { 8, 40, 100, 300, 450, 600 })),
 	JAIL,
-	ST_CHARLES_PLACE(
-		new Color(0xB019AA)
-		, new StandardLogic(140, 100, new int[]{ 10, 50, 150, 450, 625, 750 })
-	),
-	ELECTRIC_COMPANY(
-		new Color(134, 134, 134)
-		, new UtilityLogic()
-	),
-	STATES_AVENUE(
-		ST_CHARLES_PLACE.color
-		, new StandardLogic(140, 100, new int[]{ 10, 50, 150, 450, 625, 750 })
-	),
-	VIRGINIA_AVENUE(
-		ST_CHARLES_PLACE.color
-		, new StandardLogic(160, 100, new int[]{ 12, 60, 180, 500, 700, 900 })
-	),
-	PENNSYLVANIA_RAILROAD(
-		READING_RAILROAD.color
-		, new RailRoadLogic()
-	),
-	ST_JAMES_PLACE(
-		new Color(0xC95C14)
-		, new StandardLogic(180, 100, new int[]{ 14, 70, 200, 550, 750, 950 })
-	),
-	COMMUNITY_CHEST_2(
-		Color.WHITE,
-		CommunityChestLogic.INSTANCE
-	),
-	TENNESSEE_AVENUE(
-		ST_JAMES_PLACE.color
-		, new StandardLogic(180, 100, new int[]{ 14, 70, 200, 550, 750, 950 })
-	),
-	NEW_YORK_AVENUE(
-		ST_JAMES_PLACE.color
-		, new StandardLogic(200, 100, new int[]{ 16, 80, 220, 600, 800, 1000 })
-	),
+	ST_CHARLES_PLACE(new Color(0xB019AA), new StandardLogic(140, 100, new int[] { 10, 50, 150, 450, 625, 750 })),
+	ELECTRIC_COMPANY(new Color(134, 134, 134), new UtilityLogic()),
+	STATES_AVENUE(ST_CHARLES_PLACE.color, new StandardLogic(140, 100, new int[] { 10, 50, 150, 450, 625, 750 })),
+	VIRGINIA_AVENUE(ST_CHARLES_PLACE.color, new StandardLogic(160, 100, new int[] { 12, 60, 180, 500, 700, 900 })),
+	PENNSYLVANIA_RAILROAD(READING_RAILROAD.color, new RailRoadLogic()),
+	ST_JAMES_PLACE(new Color(0xC95C14), new StandardLogic(180, 100, new int[] { 14, 70, 200, 550, 750, 950 })),
+	COMMUNITY_CHEST_2(Color.WHITE, CommunityChestLogic.INSTANCE),
+	TENNESSEE_AVENUE(ST_JAMES_PLACE.color, new StandardLogic(180, 100, new int[] { 14, 70, 200, 550, 750, 950 })),
+	NEW_YORK_AVENUE(ST_JAMES_PLACE.color, new StandardLogic(200, 100, new int[] { 16, 80, 220, 600, 800, 1000 })),
 	FREE_PARKING,
-	KENTUCKY_AVENUE(
-		new Color(0xE50D1E)
-		, new StandardLogic(220, 150, new int[]{ 18, 90, 250, 700, 875, 1050 })
-	),
-	CHANCE_2(
-		Color.WHITE,
-		ChanceLogic.INSTANCE
-	),
-	INDIANA_AVENUE(
-		KENTUCKY_AVENUE.color
-		, new StandardLogic(220, 150, new int[]{ 18, 90, 250, 700, 875, 1050 })
-	),
-	ILLINOIS_AVENUE(
-		KENTUCKY_AVENUE.color
-		, new StandardLogic(240, 150, new int[]{ 20, 100, 300, 750, 925, 1100 })
-	),
-	B_AND_O_RAILROAD(
-		READING_RAILROAD.color
-		, new RailRoadLogic()
-	),
-	ATLANTIC_AVENUE(
-		new Color(0xE5DA16)
-		, new StandardLogic(260, 150, new int[]{ 22, 110, 330, 800, 975, 1150 })
-	),
-	VENTNOR_AVENUE(
-		ATLANTIC_AVENUE.color
-		, new StandardLogic(260, 150, new int[]{ 22, 110, 330, 800, 975, 1150 })
-	),
-	WATER_WORKS(
-		ELECTRIC_COMPANY.color
-		, new UtilityLogic()
-	),
-	MARVIN_GARDENS(
-		ATLANTIC_AVENUE.color
-		, new StandardLogic(280, 150, new int[]{ 24, 120, 360, 850, 1025, 1200 })
-	),
-	GO_TO_JAIL(
-		Color.WHITE,
-		new JailLogic()
-	),
-	PACIFIC_AVENUE(
-		new Color(0x1DE81D)
-		, new StandardLogic(300, 200, new int[]{ 26, 130, 390, 900, 1100, 1275 })
-	),
-	NORTH_CAROLINA_AVENUE(
-		PACIFIC_AVENUE.color
-		, new StandardLogic(300, 200, new int[]{ 26, 130, 390, 900, 1100, 1275 })
-	),
-	COMMUNITY_CHEST_3(
-		Color.WHITE,
-		CommunityChestLogic.INSTANCE
-	),
-	PENSNSYLVANIA_AVENUE(
-		PACIFIC_AVENUE.color
-		, new StandardLogic(320, 200, new int[]{ 28, 150, 450, 1000, 1200, 1400 })
-	),
-	SHORT_LINE(
-		READING_RAILROAD.color
-		, new RailRoadLogic()
-	),
-	CHANCE_3(
-		Color.WHITE,
-		ChanceLogic.INSTANCE
-	),
-	PARK_PLACE(
-		new Color(0x1D1DE8)
-		, new StandardLogic(350, 200, new int[]{ 35, 175, 500, 1100, 1300, 1500 })
-	),
-	LUXURY_TAX(
-		Color.WHITE,
-		TaxLogic.LUXURY_TAX
-	),
-	BOARDWALK(
-		PARK_PLACE.color
-		, new StandardLogic(400, 200, new int[]{ 50, 200, 600, 1400, 1700, 2000 })
-	);
+	KENTUCKY_AVENUE(new Color(0xE50D1E), new StandardLogic(220, 150, new int[] { 18, 90, 250, 700, 875, 1050 })),
+	CHANCE_2(Color.WHITE, ChanceLogic.INSTANCE),
+	INDIANA_AVENUE(KENTUCKY_AVENUE.color, new StandardLogic(220, 150, new int[] { 18, 90, 250, 700, 875, 1050 })),
+	ILLINOIS_AVENUE(KENTUCKY_AVENUE.color, new StandardLogic(240, 150, new int[] { 20, 100, 300, 750, 925, 1100 })),
+	B_AND_O_RAILROAD(READING_RAILROAD.color, new RailRoadLogic()),
+	ATLANTIC_AVENUE(new Color(0xE5DA16), new StandardLogic(260, 150, new int[] { 22, 110, 330, 800, 975, 1150 })),
+	VENTNOR_AVENUE(ATLANTIC_AVENUE.color, new StandardLogic(260, 150, new int[] { 22, 110, 330, 800, 975, 1150 })),
+	WATER_WORKS(ELECTRIC_COMPANY.color, new UtilityLogic()),
+	MARVIN_GARDENS(ATLANTIC_AVENUE.color, new StandardLogic(280, 150, new int[] { 24, 120, 360, 850, 1025, 1200 })),
+	GO_TO_JAIL(Color.WHITE, new JailLogic()),
+	PACIFIC_AVENUE(new Color(0x1DE81D), new StandardLogic(300, 200, new int[] { 26, 130, 390, 900, 1100, 1275 })),
+	NORTH_CAROLINA_AVENUE(PACIFIC_AVENUE.color, new StandardLogic(300, 200, new int[] { 26, 130, 390, 900, 1100, 1275 })),
+	COMMUNITY_CHEST_3(Color.WHITE, CommunityChestLogic.INSTANCE),
+	PENSNSYLVANIA_AVENUE(PACIFIC_AVENUE.color, new StandardLogic(320, 200, new int[] { 28, 150, 450, 1000, 1200, 1400 })),
+	SHORT_LINE(READING_RAILROAD.color, new RailRoadLogic()),
+	CHANCE_3(Color.WHITE, ChanceLogic.INSTANCE),
+	PARK_PLACE(new Color(0x1D1DE8), new StandardLogic(350, 200, new int[] { 35, 175, 500, 1100, 1300, 1500 })),
+	LUXURY_TAX(Color.WHITE, TaxLogic.LUXURY_TAX),
+	BOARDWALK(PARK_PLACE.color, new StandardLogic(400, 200, new int[] { 50, 200, 600, 1400, 1700, 2000 }));
 
 	@Serial
 	private static final long serialVersionUID = 20240805L;

@@ -1,15 +1,16 @@
- package xyz.cliserkad.consortium;
+package xyz.cliserkad.consortium;
 
- import javax.swing.*;
- import java.awt.*;
- import java.awt.event.ActionEvent;
- import java.awt.event.ActionListener;
- import java.io.File;
- import java.io.IOException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
- import static xyz.cliserkad.consortium.GameServer.BASE_PORT;
+import static xyz.cliserkad.consortium.GameServer.BASE_PORT;
 
 public class GameConnector implements ActionListener {
+
 	public static final String DEFAULT_HOST = "localhost";
 	public static final String JAR_NAME = new File(GameConnector.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getName();
 	public static final String JAVA_COMMAND = "java";

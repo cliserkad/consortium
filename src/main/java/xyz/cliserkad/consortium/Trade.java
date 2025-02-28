@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Trade implements Serializable {
+
 	@Serial
 	private static final long serialVersionUID = 20240718L;
 
@@ -36,14 +37,7 @@ public class Trade implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Trade {" +
-			"\n\tproposer=" + proposer +
-			"\n\tacceptor=" + acceptor +
-			"\n\tmoneyToProposer=" + moneyToProposer +
-			"\n\tmoneyToAcceptor=" + moneyToAcceptor +
-			"\n\tpositionsToProposer=" + positionsToProposer +
-			"\n\tpositionsToAcceptor=" + positionsToAcceptor +
-			"\n}";
+		return "Trade {" + "\n\tproposer=" + proposer + "\n\tacceptor=" + acceptor + "\n\tmoneyToProposer=" + moneyToProposer + "\n\tmoneyToAcceptor=" + moneyToAcceptor + "\n\tpositionsToProposer=" + positionsToProposer + "\n\tpositionsToAcceptor=" + positionsToAcceptor + "\n}";
 	}
 
 	@Override

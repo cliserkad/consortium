@@ -78,6 +78,7 @@ public class GraphicalGameClient implements GameClient {
 			public void windowClosing(WindowEvent e) {
 				kill();
 			}
+
 		});
 
 		frame.add(panel);
