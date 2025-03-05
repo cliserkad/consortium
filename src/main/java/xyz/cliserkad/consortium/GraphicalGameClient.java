@@ -1,5 +1,6 @@
 package xyz.cliserkad.consortium;
 
+import xyz.cliserkad.consortium.gui.NonModalDialog;
 import xyz.cliserkad.util.Duo;
 
 import javax.swing.*;
@@ -33,6 +34,13 @@ public class GraphicalGameClient implements GameClient {
 	private Player avatar;
 	// allow us to save a game state for debug purposes
 	private boolean saveNextGameState = false;
+
+	public enum EndTurnOption {
+		END_TURN,
+		TRADE,
+		IMPROVE_PROPERTY,
+		DECLARE_BANKRUPTCY
+	}
 
 	public GraphicalGameClient() {
 		System.out.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().threadId());
@@ -122,78 +130,85 @@ public class GraphicalGameClient implements GameClient {
 					return null;
 				}
 			} else if(prompt == EndTurnAction.class) {
-				final int dialogResult = JOptionPane.showOptionDialog(frame, "End of Turn Options", "End of Turn Options", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, END_OF_TURN_ACTIONS, END_OF_TURN_ACTIONS[0]);
+				return switch(NonModalDialog.showDialog(EndTurnOption.class, "End of Turn Options").get()) {
+					case EndTurnOption endTurnOption -> {
+						yield switch(endTurnOption) {
+							case END_TURN -> {
+								yield new EndTurnAction();
+							}
+							case TRADE -> {
+								final int playerSelection = JOptionPane.showOptionDialog(frame, "Select Player to Trade With", "Select Player to Trade With", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, gameState.getPlayers(), gameState.getPlayers()[0]);
 
-				if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(END_TURN)) {
-					return new EndTurnAction();
-				} else if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(TRADE)) {
+								if(playerSelection == JOptionPane.CLOSED_OPTION) {
+									yield new EndTurnAction();
+								}
 
-					final int playerSelection = JOptionPane.showOptionDialog(frame, "Select Player to Trade With", "Select Player to Trade With", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, gameState.getPlayers(), gameState.getPlayers()[0]);
+								Player tradee = gameState.getPlayers()[playerSelection];
 
-					if(playerSelection == JOptionPane.CLOSED_OPTION) {
-						return new EndTurnAction();
+								Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
+								Duo<JScrollPane, JList<String>> tradeePositions = generatePositionList(tradee, gameState);
+
+								SpinnerNumberModel moneyOfferedModel = new SpinnerNumberModel(0, 0, Math.max(0, avatar.getMoney()), 10);
+								SpinnerNumberModel moneyRequestedModel = new SpinnerNumberModel(0, 0, Math.max(0, tradee.getMoney()), 10);
+
+								JSpinner moneyOfferedSpinner = new JSpinner(moneyOfferedModel);
+								JSpinner moneyRequestedSpinner = new JSpinner(moneyRequestedModel);
+
+								JPanel panel = new JPanel();
+								panel.add(new JLabel("Properties Offered:"));
+								panel.add(avatarPositions.a);
+								panel.add(new JLabel("Properties Requested:"));
+								panel.add(tradeePositions.a);
+								panel.add(new JLabel("Money Offered :"));
+								panel.add(moneyOfferedSpinner);
+								panel.add(new JLabel("Money Requested: "));
+								panel.add(moneyRequestedSpinner);
+								panel.setVisible(true);
+
+								final int dialogResult2 = JOptionPane.showConfirmDialog(frame, panel, "Select Properties to Trade", JOptionPane.OK_CANCEL_OPTION);
+
+								if(dialogResult2 == JOptionPane.OK_OPTION) {
+									List<BoardPosition> positionsOffered = new ArrayList<>();
+									for(String name : avatarPositions.b.getSelectedValuesList()) {
+										positionsOffered.add(gameState.getBoardElement(name).position);
+									}
+									List<BoardPosition> positionsRequested = new ArrayList<>();
+									for(String name : tradeePositions.b.getSelectedValuesList()) {
+										positionsRequested.add(gameState.getBoardElement(name).position);
+									}
+
+									Trade sample = new Trade(avatar, tradee, (Integer) moneyRequestedSpinner.getValue(), (Integer) moneyOfferedSpinner.getValue(), positionsRequested, positionsOffered);
+									yield new ProposeTradeAction(sample);
+								} else {
+									yield new EndTurnAction();
+								}
+							}
+							case IMPROVE_PROPERTY -> {
+								Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
+
+								JPanel panel = new JPanel();
+								panel.add(avatarPositions.a);
+								panel.setVisible(true);
+
+								final int dialogResult2 = JOptionPane.showConfirmDialog(frame, panel, "Select Property to Improve", JOptionPane.YES_NO_CANCEL_OPTION);
+
+								if(dialogResult2 == JOptionPane.YES_OPTION || dialogResult2 == JOptionPane.NO_OPTION) {
+									BoardPosition position = gameState.getBoardElement(avatarPositions.b.getSelectedValue()).position;
+									yield new ImprovePropertyAction(position, dialogResult2 == JOptionPane.YES_OPTION);
+								} else {
+									System.out.println("Improvement cancelled");
+									yield new EndTurnAction();
+								}
+							}
+							case DECLARE_BANKRUPTCY -> {
+								yield new DeclareBankruptcyAction();
+							}
+						};
 					}
-
-					Player tradee = gameState.getPlayers()[playerSelection];
-
-					Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
-					Duo<JScrollPane, JList<String>> tradeePositions = generatePositionList(tradee, gameState);
-
-					SpinnerNumberModel moneyOfferedModel = new SpinnerNumberModel(0, 0, Math.max(0, avatar.getMoney()), 10);
-					SpinnerNumberModel moneyRequestedModel = new SpinnerNumberModel(0, 0, Math.max(0, tradee.getMoney()), 10);
-
-					JSpinner moneyOfferedSpinner = new JSpinner(moneyOfferedModel);
-					JSpinner moneyRequestedSpinner = new JSpinner(moneyRequestedModel);
-
-					JPanel panel = new JPanel();
-					panel.add(new JLabel("Properties Offered:"));
-					panel.add(avatarPositions.a);
-					panel.add(new JLabel("Properties Requested:"));
-					panel.add(tradeePositions.a);
-					panel.add(new JLabel("Money Offered :"));
-					panel.add(moneyOfferedSpinner);
-					panel.add(new JLabel("Money Requested: "));
-					panel.add(moneyRequestedSpinner);
-					panel.setVisible(true);
-
-					final int dialogResult2 = JOptionPane.showConfirmDialog(frame, panel, "Select Properties to Trade", JOptionPane.OK_CANCEL_OPTION);
-
-					if(dialogResult2 == JOptionPane.OK_OPTION) {
-						List<BoardPosition> positionsOffered = new ArrayList<>();
-						for(String name : avatarPositions.b.getSelectedValuesList()) {
-							positionsOffered.add(gameState.getBoardElement(name).position);
-						}
-						List<BoardPosition> positionsRequested = new ArrayList<>();
-						for(String name : tradeePositions.b.getSelectedValuesList()) {
-							positionsRequested.add(gameState.getBoardElement(name).position);
-						}
-
-						Trade sample = new Trade(avatar, tradee, (Integer) moneyRequestedSpinner.getValue(), (Integer) moneyOfferedSpinner.getValue(), positionsRequested, positionsOffered);
-						return new ProposeTradeAction(sample);
-					} else {
-						return new EndTurnAction();
+					case null -> {
+						yield new EndTurnAction();
 					}
-				} else if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(IMPROVE_PROPERTY)) {
-					Duo<JScrollPane, JList<String>> avatarPositions = generatePositionList(avatar, gameState);
-
-					JPanel panel = new JPanel();
-					panel.add(avatarPositions.a);
-					panel.setVisible(true);
-
-					final int dialogResult2 = JOptionPane.showConfirmDialog(frame, panel, "Select Property to Improve", JOptionPane.YES_NO_CANCEL_OPTION);
-
-					if(dialogResult2 == JOptionPane.YES_OPTION || dialogResult2 == JOptionPane.NO_OPTION) {
-						BoardPosition position = gameState.getBoardElement(avatarPositions.b.getSelectedValue()).position;
-						return new ImprovePropertyAction(position, dialogResult2 == JOptionPane.YES_OPTION);
-					} else {
-						System.out.println("Improvement cancelled");
-						return new EndTurnAction();
-					}
-				} else if(dialogResult == END_OF_TURN_ACTIONS_LIST.indexOf(DECLARE_BANKRUPTCY)) {
-					return new DeclareBankruptcyAction();
-				} else {
-					return new EndTurnAction();
-				}
+				};
 			} else if(prompt == AcceptTradeAction.class) {
 				// Show a dialog box asking the player if they want to accept the trade
 				final int dialogResult = JOptionPane.showConfirmDialog(frame, "Would you like to accept? " + gameState.getProposedTrade().toString(), "Trade Offer", JOptionPane.YES_NO_OPTION);
