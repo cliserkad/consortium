@@ -47,6 +47,7 @@ jobs:
           files: |
             target/consortium.jar
             src/scripts/consortium-windows.bat
+            src/scripts/consortium-macos.zsh
       - name: Move auto-release tag to current commit
         uses: EndBug/latest-tag@latest
         with:
