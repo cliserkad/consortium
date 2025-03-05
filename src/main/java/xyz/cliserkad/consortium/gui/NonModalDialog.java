@@ -13,21 +13,25 @@ public class NonModalDialog {
 	private JDialog dialog;
 
 	public enum ConfirmCanel {
+
 		CONFIRM,
 		CANCEL;
 
 		public String toString() {
 			return Main.prettifyEnumName(name());
 		}
+
 	}
 
 	public enum YesNo {
+
 		YES,
 		NO;
 
 		public String toString() {
 			return Main.prettifyEnumName(name());
 		}
+
 	}
 
 	public static <T> FutureTask<T> showDialog(final Object content, final String message, final T... options) {

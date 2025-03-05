@@ -37,6 +37,7 @@ public class GraphicalGameClient implements GameClient {
 	private boolean saveNextGameState = false;
 
 	public enum EndTurnOption {
+
 		END_TURN,
 		TRADE,
 		IMPROVE_PROPERTY,
@@ -45,18 +46,22 @@ public class GraphicalGameClient implements GameClient {
 		public String toString() {
 			return Main.prettifyEnumName(name());
 		}
+
 	}
 
 	public enum ImproveDegrade {
+
 		IMPROVE,
 		DEGRADE;
 
 		public String toString() {
 			return Main.prettifyEnumName(name());
 		}
+
 	}
 
 	public enum BidOption {
+
 		BID_10(10),
 		BID_50(50),
 		BID_100(100),
@@ -74,6 +79,7 @@ public class GraphicalGameClient implements GameClient {
 			}
 			return Main.prettifyEnumName(name()) + " $" + amt;
 		}
+
 	}
 
 	public GraphicalGameClient() {
