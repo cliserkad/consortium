@@ -88,12 +88,21 @@
 					<generateGitPropertiesFilename>
 						${project.build.outputDirectory}/git.properties
 					</generateGitPropertiesFilename>
-					<includeOnlyProperties>
-						<includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
-						<includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
-					</includeOnlyProperties>
 					<commitIdGenerationMode>full</commitIdGenerationMode>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>templating-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>filter-sources</goal>
+						</goals>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
