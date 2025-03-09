@@ -18,7 +18,7 @@ public enum BoardPosition implements Serializable {
 	MEDITERRANEAN_AVENUE(new Color(0x8B4513), new StandardLogic(60, 50, new int[] { 2, 10, 30, 90, 160, 250 })),
 	COMMUNITY_CHEST_1(Color.WHITE, CommunityChestLogic.INSTANCE),
 	BALTIC_AVENUE(MEDITERRANEAN_AVENUE.color, new StandardLogic(60, 50, new int[] { 4, 20, 60, 180, 320, 450 })),
-	INCOME_TAX(Color.WHITE, TaxLogic.INCOME_TAX),
+	INCOME_TAX(Color.WHITE, IncomeTaxLogic.INSTANCE),
 	READING_RAILROAD(Color.BLACK, new RailRoadLogic()),
 	ORIENTAL_AVENUE(new Color(0xB2FFE8), new StandardLogic(100, 50, new int[] { 6, 30, 90, 270, 400, 550 })),
 	CHANCE_1(Color.WHITE, ChanceLogic.INSTANCE),
@@ -52,7 +52,7 @@ public enum BoardPosition implements Serializable {
 	SHORT_LINE(READING_RAILROAD.color, new RailRoadLogic()),
 	CHANCE_3(Color.WHITE, ChanceLogic.INSTANCE),
 	PARK_PLACE(new Color(0x1D1DE8), new StandardLogic(350, 200, new int[] { 35, 175, 500, 1100, 1300, 1500 })),
-	LUXURY_TAX(Color.WHITE, TaxLogic.LUXURY_TAX),
+	LUXURY_TAX(Color.WHITE, LuxuryTaxLogic.INSTANCE),
 	BOARDWALK(PARK_PLACE.color, new StandardLogic(400, 200, new int[] { 50, 200, 600, 1400, 1700, 2000 }));
 
 	@Serial
