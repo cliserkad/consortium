@@ -23,7 +23,7 @@ public class Player implements Serializable {
 
 	public Player(GameClient controller) {
 		position = BoardPosition.GO;
-		money = 1800;
+		money = 800;
 		playerIndex = numPlayers++;
 		this.controller = controller;
 		isBankrupt = false;
