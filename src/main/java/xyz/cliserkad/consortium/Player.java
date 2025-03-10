@@ -21,9 +21,9 @@ public class Player implements Serializable {
 	private BoardPosition position;
 	public transient final GameClient controller;
 
-	public Player(GameClient controller) {
+	public Player(GameClient controller, int initialMoney) {
 		position = BoardPosition.GO;
-		money = 800;
+		money = initialMoney;
 		playerIndex = numPlayers++;
 		this.controller = controller;
 		isBankrupt = false;

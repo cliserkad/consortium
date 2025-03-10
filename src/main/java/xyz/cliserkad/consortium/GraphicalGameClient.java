@@ -118,7 +118,7 @@ public class GraphicalGameClient implements GameClient {
 
 		List<GameClient> self = new ArrayList<>();
 		self.add(this);
-		update(new GameState(self));
+		update(new GameState(self, new GameConfig()));
 
 		frame.addWindowListener(new WindowAdapter() {
 

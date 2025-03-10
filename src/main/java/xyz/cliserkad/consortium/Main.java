@@ -34,22 +34,23 @@ public class Main {
 	public static final String TITLE = "Consortium " + Version.COMMIT_ID_ABBREV;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		if(args.length == 2) {
-			if(args[0].equalsIgnoreCase("server")) {
-				GameServer.main(new String[] { args[1] });
-			} else {
-				try {
-					NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), args[0], Integer.parseInt(args[1]));
-					responder.start();
-				} catch(NumberFormatException e) {
-					System.err.println("Invalid port number: " + args[1]);
-				} catch(IOException e) {
-					System.err.println("Failed to connect to server at " + args[0] + ":" + args[1] + ": " + e.getMessage());
-				}
-			}
-		}
 		System.setProperty("user.dir", RESOURCES.resourcesRoot.getAbsolutePath());
-		new GameConnector();
+		if(args.length == 1 && args[0].equalsIgnoreCase("server")) {
+			GameServer.main(args);
+		} else if(args.length == 2) {
+			try {
+				System.out.println("Attempting to connect to server at " + args[0] + ":" + args[1] + "...");
+				NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), args[0], Integer.parseInt(args[1]));
+				responder.start();
+			} catch(NumberFormatException e) {
+				System.err.println("Invalid port number: " + args[1]);
+			} catch(IOException e) {
+				System.err.println("Failed to connect to server at " + args[0] + ":" + args[1] + ": " + e.getMessage());
+			}
+		} else {
+			System.out.println("Run server via:\njava -jar consortium.jar server\nStarting client...");
+			new GameConnector();
+		}
 	}
 
 	public static ResourcesDescriptor describeResources() {

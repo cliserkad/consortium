@@ -15,6 +15,7 @@ import static xyz.cliserkad.consortium.StandardLogic.MORTGAGE_IMPROVEMENT_AMOUNT
  */
 public class GameState implements Serializable {
 
+	private final transient GameConfig config;
 	private final transient int[] communityCardStack = genShuffledArray(CommunityChestLogic.CommunityCard.values().length);
 	private final transient int[] chanceCardStack = genShuffledArray(ChanceLogic.ChanceCard.values().length);
 	private int communityCardIndex = 0;
@@ -38,7 +39,9 @@ public class GameState implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 20240805L;
 
-	public GameState(List<GameClient> clients) {
+	public GameState(List<GameClient> clients, GameConfig config) {
+		this.config = config;
+
 		boardElements = new BoardElement[BoardPosition.values().length];
 		for(int i = 0; i < BoardPosition.values().length; i++) {
 			final BoardPosition position = BoardPosition.values()[i];
@@ -48,7 +51,7 @@ public class GameState implements Serializable {
 
 		players = new Player[clients.size()];
 		for(int i = 0; i < clients.size(); i++)
-			players[i] = new Player(clients.get(i));
+			players[i] = new Player(clients.get(i), config.initialMoney);
 
 		for(Player player : players) {
 			player.setPosition(BoardPosition.GO, this);
@@ -64,7 +67,7 @@ public class GameState implements Serializable {
 	 * Creates a new game state with no players. Used as a placeholder for updating clients during game initialization.
 	 */
 	public GameState() {
-		this(new ArrayList<>());
+		this(new ArrayList<>(), new GameConfig());
 	}
 
 	/**
