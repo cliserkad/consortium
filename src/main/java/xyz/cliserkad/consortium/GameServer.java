@@ -4,12 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import xyz.cliserkad.util.Text;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +74,18 @@ public class GameServer {
 		} catch(IOException e) {
 			System.err.println(e.getMessage());
 			System.err.println("Failed to read " + fileName);
+
+			File file = new File(fileName);
+			if(!file.exists()) {
+				try {
+					file.createNewFile();
+					Files.writeString(file.toPath(), gson.toJson(config));
+					System.out.println("Wrote sample " + fileName);
+				} catch(IOException e1) {
+					System.err.println("Failed to create " + fileName);
+					System.err.println(e1.getMessage());
+				}
+			}
 		}
 		System.out.println("Current " + config.getClass().getSimpleName() + ":");
 		System.out.println(gson.toJson(config));

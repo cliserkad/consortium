@@ -11,13 +11,13 @@ https://github.com/cliserkad/consortium/releases/latest/download/consortium.jar
 Run the jar from a terminal:
 
 ```
-java -jar consortium.jar 
+java -jar consortium.jar
 ```
 
-Optionally, you can provide the ip and port as command line arguments:
+To run the server:
 
 ```
-java -jar consortium.jar <ip> <port>
+java -jar consortium.jar server
 ```
 
 ## Build
@@ -29,5 +29,5 @@ git clone https://github.com/cliserkad/consortium
 cd consortium
 mvn clean package
 cd target
-java -jar consortium.jar <ip> <port>
+java -jar consortium.jar
 ```
