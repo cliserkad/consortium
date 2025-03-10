@@ -14,7 +14,7 @@ public class IncomeTaxLogic implements PositionLogic {
 	public String onLand(Player mover, GameState gameState) {
 		int deducted = (int) (mover.getMoney() * INCOME_TAX_FACTOR);
 		mover.addMoney(-deducted);
-		return mover.getIcon() + " paid $" + -deducted + " in Income Tax";
+		return mover.getIcon() + " paid $" + deducted + " in Income Tax";
 	}
 
 }

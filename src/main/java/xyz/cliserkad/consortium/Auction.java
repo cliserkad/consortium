@@ -17,13 +17,14 @@ public class Auction implements Serializable {
 	public int bid;
 
 	// TODO: fix purchasable interface
-	public Auction(BoardElement property, List<Player> bidders) {
+	public Auction(BoardElement property, List<Player> bidders, GameConfig config) {
 		this.property = property;
 		this.bidders = bidders;
 		bids = new ArrayList<>();
-		if(property instanceof Purchasable purchasable) {
-			bid = (int) (purchasable.cost() * 0.25f);
+		if(property.position.logic instanceof Purchasable purchasable) {
+			bid = (int) (purchasable.cost() * config.startingBidFactor) - config.minimumBid;
 		} else {
+			System.err.println("Auction property is not purchasable.");
 			bid = 0;
 		}
 	}

@@ -247,12 +247,14 @@ public class GameState implements Serializable {
 	private String holdAuction(Player firstBidder, BoardElement element) {
 		if(element.position.logic instanceof Purchasable purchasable) {
 			// add all players who can afford the property to the auction
-			auction = new Auction(element, new ArrayList<>(Arrays.asList(players)));
-			auction.bidders.removeIf(player -> player.getMoney() < 1);
+			auction = new Auction(element, new ArrayList<>(Arrays.asList(players)), config);
+			auction.bidders.removeIf(player -> player.getMoney() < auction.bid);
 
 			// abort if no players have any money :(
 			if(auction.bidders.isEmpty())
 				return "No players have enough money to bid on " + element.position.niceName;
+
+			broadcast("Auction for " + element.position.niceName + " has begun! Starting bid: $" + auction.bid + config.minimumBid);
 
 			// set the current bidder to the first bidder if they can participate
 			if(auction.bidders.contains(firstBidder))
@@ -260,9 +262,9 @@ public class GameState implements Serializable {
 			else
 				auction.currentBidder = auction.bidders.getFirst();
 
-			while((auction.bidders.size() == 1 && auction.bid <= 0) || auction.bidders.size() > 1) {
+			while(auction.bidders.size() > 1 || (auction.bidders.size() == 1 && auction.bids.isEmpty())) {
 				PlayerAction response = updateAndPoll(auction.currentBidder, BidAction.class);
-				if(response instanceof BidAction bidAction && bidAction.amount() > auction.bid && auction.currentBidder.getMoney() >= bidAction.amount()) {
+				if(response instanceof BidAction bidAction && bidAction.amount() >= auction.bid + config.minimumBid && auction.currentBidder.getMoney() >= bidAction.amount()) {
 					auction.bid = bidAction.amount();
 					auction.bids.add(bidAction);
 					broadcast(auction.currentBidder.getIcon() + " bid $" + auction.bid + " on " + element.position.niceName);
@@ -274,7 +276,8 @@ public class GameState implements Serializable {
 					auction.currentBidder = auction.bidders.get((auction.currentBidder.playerIndex + 1) % auction.bidders.size());
 			}
 
-			if(!auction.bidders.isEmpty() && auction.bid > 0) {
+			// if any bids were placed, the property is sold to the last remaining bidder
+			if(!auction.bids.isEmpty() && !auction.bidders.isEmpty()) {
 				final Player auctionWinner = auction.bidders.getFirst();
 				auctionWinner.addMoney(-auction.bid);
 				element.setOwner(auctionWinner);
