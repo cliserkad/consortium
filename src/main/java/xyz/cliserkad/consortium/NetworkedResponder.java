@@ -32,6 +32,9 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 		this.port = port;
 		this.arguments = new ArrayList<>();
 		this.isVerbose = isVerbose;
+
+		if(isVerbose)
+			System.out.println("Networked responder created for " + ip + ":" + port);
 	}
 
 	public NetworkedResponder(InterfaceInstance interfaceInstance, final String ip, final int port) throws IOException {

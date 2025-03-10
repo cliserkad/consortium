@@ -25,6 +25,8 @@ public class GameServer {
 	private int turns;
 
 	public GameServer() throws IOException, InterruptedException {
+		System.out.println("server starting...");
+
 		GameConfig gameConfig = readConfigFile(new GameConfig(), GameConfig.class);
 		LobbyConfig lobbyConfig = readConfigFile(new LobbyConfig(), LobbyConfig.class);
 

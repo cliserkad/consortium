@@ -7,6 +7,8 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Random;
 
+import static xyz.cliserkad.consortium.GameServer.readConfigFile;
+
 public class Main {
 
 	public static final int BOARD_X_SIZE = 11;
@@ -34,23 +36,21 @@ public class Main {
 	public static final String TITLE = "Consortium " + Version.COMMIT_ID_ABBREV;
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+		System.out.println(TITLE + " built on " + Version.BUILD_TIME);
 		System.setProperty("user.dir", RESOURCES.resourcesRoot.getAbsolutePath());
 		if(args.length == 1 && args[0].equalsIgnoreCase("server")) {
 			GameServer.main(args);
-		} else if(args.length == 2) {
-			try {
-				System.out.println("Attempting to connect to server at " + args[0] + ":" + args[1] + "...");
-				NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), args[0], Integer.parseInt(args[1]));
-				responder.start();
-			} catch(NumberFormatException e) {
-				System.err.println("Invalid port number: " + args[1]);
-			} catch(IOException e) {
-				System.err.println("Failed to connect to server at " + args[0] + ":" + args[1] + ": " + e.getMessage());
-			}
 		} else {
-			System.out.println("Run server via:\njava -jar consortium.jar server\nStarting client...");
-			new GameConnector();
+			ConnectionConfig connectionConfig = readConfigFile(new ConnectionConfig(), ConnectionConfig.class);
+			try {
+				NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), connectionConfig.ipAddress, connectionConfig.port, true);
+				responder.start();
+			} catch(IOException e) {
+				System.out.println("Failed to connect to server at " + connectionConfig.ipAddress + ":" + connectionConfig.port);
+				System.out.println(e.getMessage());
+			}
 		}
+		System.out.println("Exiting...");
 	}
 
 	public static ResourcesDescriptor describeResources() {
