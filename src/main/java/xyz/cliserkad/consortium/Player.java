@@ -10,7 +10,7 @@ public class Player implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 20240805L;
 
-	public static final String[] PLAYER_ICONS = { "🎩", "🐈", "💰", "👽" };
+	public static final String[] PLAYER_ICONS = { "🎩", "🐈", "💰", "👽", "😎", "🤠" };
 
 	private static int numPlayers = 0;
 
