@@ -168,7 +168,7 @@ public class GraphicalGameClient implements GameClient {
 				} else {
 					return new BidAction(gameState.getAuction().property.position, gameState.getAuction().bid + selection.amt);
 				}
-			} else if(prompt == EndTurnAction.class) {
+			} else if(prompt == EndTurnAction.class || prompt == DeclareBankruptcyAction.class) {
 				return switch(NonModalDialog.showDialog(EndTurnOption.class, "End of Turn Options").get()) {
 					case EndTurnOption endTurnOption -> {
 						yield switch(endTurnOption) {

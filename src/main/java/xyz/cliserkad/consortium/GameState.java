@@ -136,7 +136,10 @@ public class GameState implements Serializable {
 		if(getCurrentPlayer().getMoney() < 0)
 			broadcast(getCurrentPlayer().getIcon() + " is in debt! (" + getCurrentPlayer().getMoney() + ") They will need to raise funds or declare bankruptcy.");
 		do {
-			response = updateAndPoll(getCurrentPlayer(), EndTurnAction.class);
+			if(getCurrentPlayer().getMoney() < 0)
+				response = updateAndPoll(getCurrentPlayer(), DeclareBankruptcyAction.class);
+			else
+				response = updateAndPoll(getCurrentPlayer(), EndTurnAction.class);
 			if(response instanceof ProposeTradeAction proposeTradeAction) {
 				broadcast("Trade proposed by " + proposeTradeAction.trade().proposer.getIcon() + " to " + proposeTradeAction.trade().acceptor.getIcon() + " " + proposeTradeAction.trade());
 				proposedTrade = proposeTradeAction.trade();
