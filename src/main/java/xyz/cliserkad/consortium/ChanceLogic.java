@@ -88,6 +88,7 @@ public class ChanceLogic implements PositionLogic {
 				}
 			}
 			case BUILDING_LOAN -> player.addMoney(150);
+			// TODO: fix double auction failure when ADVANCE_TO_VERMONT is pulled
 			case ADVANCE_TO_VERMONT -> gameState.movePlayer(player, BoardPosition.VERMONT_AVENUE, 0);
 		}
 		return player.getIcon() + " pulled Chance Card \"" + pulledCard.niceName + "\"";

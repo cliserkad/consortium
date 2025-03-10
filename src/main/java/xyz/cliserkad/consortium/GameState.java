@@ -153,6 +153,13 @@ public class GameState implements Serializable {
 				}
 			} else if(response instanceof DeclareBankruptcyAction) {
 				getCurrentPlayer().goBankrupt();
+				for(BoardElement element : boardElements) {
+					if(element.owner == getCurrentPlayer()) {
+						element.improvementAmt = 0;
+						element.setOwner(null);
+					}
+				}
+				updatePlayers();
 				broadcast(getCurrentPlayer().getIcon() + " has declared bankruptcy");
 				System.out.println("Players remaining: " + Arrays.toString(players));
 				return; // end the turn loop forcefully
@@ -251,13 +258,13 @@ public class GameState implements Serializable {
 		if(element.position.logic instanceof Purchasable purchasable) {
 			// add all players who can afford the property to the auction
 			auction = new Auction(element, new ArrayList<>(Arrays.asList(players)), config);
-			auction.bidders.removeIf(player -> player.getMoney() < auction.bid);
+			auction.bidders.removeIf(player -> player.getMoney() < auction.bid + config.minimumBid);
 
 			// abort if no players have any money :(
 			if(auction.bidders.isEmpty())
 				return "No players have enough money to bid on " + element.position.niceName;
 
-			broadcast("Auction for " + element.position.niceName + " has begun! Starting bid: $" + auction.bid + config.minimumBid);
+			broadcast("Auction for " + element.position.niceName + " has begun! Starting bid: $" + (auction.bid + config.minimumBid));
 
 			// set the current bidder to the first bidder if they can participate
 			if(auction.bidders.contains(firstBidder))
@@ -266,6 +273,8 @@ public class GameState implements Serializable {
 				auction.currentBidder = auction.bidders.getFirst();
 
 			while(auction.bidders.size() > 1 || (auction.bidders.size() == 1 && auction.bids.isEmpty())) {
+				// save for later :)
+				final Player nextBidder = auction.bidders.get((auction.bidders.indexOf(auction.currentBidder) + 1) % auction.bidders.size());
 				PlayerAction response = updateAndPoll(auction.currentBidder, BidAction.class);
 				if(response instanceof BidAction bidAction && bidAction.amount() >= auction.bid + config.minimumBid && auction.currentBidder.getMoney() >= bidAction.amount()) {
 					auction.bid = bidAction.amount();
@@ -275,8 +284,8 @@ public class GameState implements Serializable {
 					auction.bidders.remove(auction.currentBidder);
 					broadcast(auction.currentBidder.getIcon() + " withdrew from bidding on " + element.position.niceName);
 				}
-				if(!auction.bidders.isEmpty())
-					auction.currentBidder = auction.bidders.get((auction.currentBidder.playerIndex + 1) % auction.bidders.size());
+				// this is later
+				auction.currentBidder = nextBidder;
 			}
 
 			// if any bids were placed, the property is sold to the last remaining bidder

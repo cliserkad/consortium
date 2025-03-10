@@ -2,8 +2,6 @@ package xyz.cliserkad.consortium;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static xyz.cliserkad.consortium.Main.textColorForBackground;
 
@@ -16,8 +14,6 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 	private JLabel nameLabel;
 	private JLabel purchaseLabel;
 	private JLabel improvementLabel;
-
-	private List<PlayerVisual> playerVisuals = new ArrayList<>();
 
 	public BoardElementVisual(BoardElement element) {
 		super(new GridBagLayout());
@@ -75,10 +71,13 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 		element = gameState.getBoardElement(element.position);
 
 		final int targetComponentCount;
-		if(element.position.logic instanceof Purchasable) {
+		if(element.position.logic instanceof Purchasable purchasable) {
 			targetComponentCount = 3;
 			if(element.owner != null) {
 				purchaseLabel.setText("Owner: " + element.owner.getIcon());
+				improvementLabel.setText(improvementString());
+			} else {
+				purchaseLabel.setText("Cost: " + purchasable.cost());
 				improvementLabel.setText(improvementString());
 			}
 		} else {
@@ -89,7 +88,7 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 		}
 
 		for(Player player : gameState.getPlayers()) {
-			if(player.getPosition() == element.position) {
+			if(!player.isBankrupt() && player.getPosition() == element.position) {
 				GridBagConstraints constraints = new GridBagConstraints();
 				constraints.gridwidth = 1;
 				constraints.gridheight = 1;
@@ -97,7 +96,6 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 				constraints.anchor = GridBagConstraints.SOUTHWEST;
 				constraints.gridx = player.playerIndex;
 				constraints.gridy = targetComponentCount + 1;
-				playerVisuals.add(new PlayerVisual(player));
 				add(new PlayerVisual(player), constraints);
 			}
 		}
