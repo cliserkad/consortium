@@ -35,6 +35,7 @@ public class GraphicalGameClient implements GameClient {
 	private Player avatar;
 	// allow us to save a game state for debug purposes
 	private boolean saveNextGameState = false;
+	private final String name;
 
 	public enum EndTurnOption {
 
@@ -82,8 +83,11 @@ public class GraphicalGameClient implements GameClient {
 
 	}
 
-	public GraphicalGameClient() {
+	public GraphicalGameClient(String name) {
 		System.out.println("GraphicalGameClient constructor called on Thread" + Thread.currentThread().threadId());
+
+		this.name = name;
+
 		frame = new JFrame(Main.TITLE + " - " + "Player ?");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -353,6 +357,11 @@ public class GraphicalGameClient implements GameClient {
 		}
 		frame.repaint();
 		return true;
+	}
+
+	@Override
+	public String name(final Integer ignoreMe) {
+		return name;
 	}
 
 }

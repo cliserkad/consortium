@@ -43,7 +43,7 @@ public class Main {
 		} else {
 			ConnectionConfig connectionConfig = readConfigFile(new ConnectionConfig(), ConnectionConfig.class);
 			try {
-				NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(), connectionConfig.ipAddress, connectionConfig.port, true);
+				NetworkedResponder<GameClient> responder = new NetworkedResponder<>(new GraphicalGameClient(connectionConfig.friendlyName), connectionConfig.ipAddress, connectionConfig.port, true);
 				responder.start();
 			} catch(IOException e) {
 				System.out.println("Failed to connect to server at " + connectionConfig.ipAddress + ":" + connectionConfig.port);

@@ -28,7 +28,7 @@ public class PlayerVisual extends JPanel implements GameStateReceiver {
 		constraints.fill = GridBagConstraints.VERTICAL;
 		constraints.anchor = GridBagConstraints.CENTER;
 
-		JLabel playerIDDisplay = new JLabel(player.getIcon());
+		JLabel playerIDDisplay = new JLabel(player.getIcon() + player.name);
 		playerIDDisplay.setForeground(Color.BLACK);
 		playerIDDisplay.setBackground(Color.WHITE);
 		playerIDDisplay.setOpaque(true);

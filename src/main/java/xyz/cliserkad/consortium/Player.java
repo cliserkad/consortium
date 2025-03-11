@@ -18,6 +18,7 @@ public class Player implements Serializable {
 	private int money;
 	private boolean isBankrupt;
 	public final int playerIndex;
+	public final String name;
 	private BoardPosition position;
 	public transient final GameClient controller;
 
@@ -28,6 +29,7 @@ public class Player implements Serializable {
 		this.controller = controller;
 		isBankrupt = false;
 		remainingJailTurns = 0;
+		this.name = controller.name(0);
 	}
 
 	public BoardPosition getPosition() {

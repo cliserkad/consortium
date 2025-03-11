@@ -13,4 +13,9 @@ public interface GameClient extends GameStateReceiver {
 		// do nothing
 	}
 
+	// TODO: fix failure on 0 argument methods with NetworkedController
+	default String name(final Integer ignoreMe) {
+		return "";
+	}
+
 }
