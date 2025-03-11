@@ -42,7 +42,7 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
-						<phase>compile</phase>
+						<phase>verify</phase>
 					</execution>
 				</executions>
 			</plugin>
