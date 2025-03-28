@@ -49,7 +49,7 @@ public class PlayerVisual extends JPanel implements GameStateReceiver {
 	}
 
 	@Override
-	public boolean update(GameState gameState) {
+	public void update(GameState gameState) {
 		player = gameState.getPlayers()[player.playerIndex];
 		moneyDisplay.setText("$" + player.getMoney());
 		if(player.getMoney() < 0) {
@@ -58,7 +58,6 @@ public class PlayerVisual extends JPanel implements GameStateReceiver {
 			moneyDisplay.setForeground(POSITIVE_MONEY_COLOR);
 		}
 		repaint();
-		return true;
 	}
 
 	@Override

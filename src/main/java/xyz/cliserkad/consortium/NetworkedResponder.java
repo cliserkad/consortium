@@ -87,9 +87,29 @@ public class NetworkedResponder<DelegateType> extends Thread implements Connecti
 					target = delegate;
 				}
 
+				Object result;
+				if(cmd.isOptional) {
+					try {
+						result = cmd.against(target);
+					} catch(Exception e) {
+						panic(e);
+						result = null;
+					}
+				} else {
+					try {
+						result = cmd.against(target);
+					} catch(IllegalAccessException | NoSuchMethodException e) {
+						panic(e);
+						return;
+					} catch(InvocationTargetException e) {
+						panic(e);
+						result = e.getTargetException();
+					}
+				}
+
 				try {
-					out.writeObject(cmd.against(target));
-				} catch(IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e) {
+					out.writeObject(result);
+				} catch(IOException e) {
 					panic(e);
 					return;
 				}

@@ -13,16 +13,17 @@ public class MethodInvocation implements Serializable {
 
 	// Method is not serializable 😢
 	public final transient Method method;
-
 	public final String methodName;
 	public final Object[] arguments;
 	public final boolean isMaintenance;
+	public final boolean isOptional;
 
 	public MethodInvocation(Method method, Object[] arguments, boolean isMaintenance) {
 		this.method = method;
 		this.methodName = method.getName(); // Store method name for serialization
 		this.arguments = arguments;
 		this.isMaintenance = isMaintenance;
+		this.isOptional = method.isAnnotationPresent(NetOptional.class);
 	}
 
 	/**
@@ -31,7 +32,12 @@ public class MethodInvocation implements Serializable {
 	public Object against(Object target) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 		// assume this method invocation was instantiated via serialization
 		if(method == null) {
-			return target.getClass().getMethod(methodName, Arrays.stream(arguments).map(Object::getClass).toArray(Class<?>[]::new)).invoke(target, arguments);
+			final Class<?>[] argTypes;
+			if(arguments != null)
+				argTypes = Arrays.stream(arguments).map(Object::getClass).toArray(Class<?>[]::new);
+			else
+				argTypes = new Class<?>[0];
+			return target.getClass().getMethod(methodName, argTypes).invoke(target, arguments);
 		} else {
 			return method.invoke(target, arguments);
 		}

@@ -75,13 +75,10 @@ public class GameState implements Serializable {
 	 *
 	 * @return true if all Players return true
 	 */
-	public boolean updatePlayers() {
-		boolean output = true;
+	public void updatePlayers() {
 		for(Player player : players) {
-			if(!player.controller.update(this))
-				output = false;
+			player.controller.update(this);
 		}
-		return output;
 	}
 
 	public void nextTurn() {

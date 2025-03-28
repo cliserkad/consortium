@@ -29,7 +29,7 @@ public class Player implements Serializable {
 		this.controller = controller;
 		isBankrupt = false;
 		remainingJailTurns = 0;
-		this.name = controller.name(0);
+		this.name = controller.name();
 	}
 
 	public BoardPosition getPosition() {

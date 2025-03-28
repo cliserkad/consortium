@@ -104,71 +104,86 @@ public class NetworkedController<ProxyType> extends Thread implements Invocation
 			run0();
 		}
 
-		try {
-			out.reset();
-		} catch(IOException e) {
-			if(isVerbose) {
-				System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
-				e.printStackTrace();
-			}
-			return invoke0(proxy, method, args, ++callNum);
-		}
-
 		final MethodInvocation invocation = new MethodInvocation(method, args, proxy == maintenance);
-		try {
-			out.writeObject(invocation);
-		} catch(InvalidClassException invalidClassException) {
-			if(isVerbose) {
-				System.err.println("FATAL: NetworkedController can't write out given class.");
-				invalidClassException.printStackTrace();
+		if(invocation.isOptional) {
+			try {
+				out.reset();
+				out.writeObject(invocation);
+				return in.readObject();
+			} catch(Exception e) {
+				if(isVerbose) {
+					System.err.println("Ignoring the following exception:");
+					e.printStackTrace();
+				}
+				return null;
 			}
-			throw invalidClassException;
-		} catch(NotSerializableException notSerializableException) {
-			if(isVerbose) {
-				System.err.println("FATAL: NetworkedController can't serialize given object.");
-				notSerializableException.printStackTrace();
+		} else {
+			try {
+				out.reset();
+			} catch(IOException e) {
+				if(isVerbose) {
+					System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
+					e.printStackTrace();
+				}
+				return invoke0(proxy, method, args, ++callNum);
 			}
-			throw notSerializableException;
-		} catch(IOException ioException) {
-			if(isVerbose) {
-				System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
-				ioException.printStackTrace();
-			}
-			return invoke0(proxy, method, args, ++callNum);
-		}
 
-		try {
-			return in.readObject();
-		} catch(ClassNotFoundException classNotFoundException) {
-			if(isVerbose) {
-				System.err.println("FATAL: NetworkedController can't load class for object received from client/NetworkedResponder");
-				classNotFoundException.printStackTrace();
+			try {
+				out.writeObject(invocation);
+			} catch(InvalidClassException invalidClassException) {
+				if(isVerbose) {
+					System.err.println("FATAL: NetworkedController can't write out given class.");
+					invalidClassException.printStackTrace();
+				}
+				throw invalidClassException;
+			} catch(NotSerializableException notSerializableException) {
+				if(isVerbose) {
+					System.err.println("FATAL: NetworkedController can't serialize given object.");
+					notSerializableException.printStackTrace();
+				}
+				throw notSerializableException;
+			} catch(IOException ioException) {
+				if(isVerbose) {
+					System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
+					ioException.printStackTrace();
+				}
+				return invoke0(proxy, method, args, ++callNum);
 			}
-			throw classNotFoundException;
-		} catch(InvalidClassException invalidClassException) {
-			if(isVerbose) {
-				System.err.println("FATAL: NetworkedController can't read in class from client/NetworkedResponder.");
-				invalidClassException.printStackTrace();
+
+			try {
+				// FIXME: throw if object was thrown
+				return in.readObject();
+			} catch(ClassNotFoundException classNotFoundException) {
+				if(isVerbose) {
+					System.err.println("FATAL: NetworkedController can't load class for object received from client/NetworkedResponder");
+					classNotFoundException.printStackTrace();
+				}
+				throw classNotFoundException;
+			} catch(InvalidClassException invalidClassException) {
+				if(isVerbose) {
+					System.err.println("FATAL: NetworkedController can't read in class from client/NetworkedResponder.");
+					invalidClassException.printStackTrace();
+				}
+				throw invalidClassException;
+			} catch(StreamCorruptedException streamCorruptedException) {
+				if(isVerbose) {
+					System.err.println("NetworkedController encountered a StreamCorruptedException. Will retry invocation...");
+					streamCorruptedException.printStackTrace();
+				}
+				return invoke0(proxy, method, args, ++callNum);
+			} catch(OptionalDataException optionalDataException) {
+				if(isVerbose) {
+					System.err.println("FATAL: NetworkedController received primitive data types instead of objects. The client/NetworkedResponder needs to wrap primitives.");
+					optionalDataException.printStackTrace();
+				}
+				throw optionalDataException;
+			} catch(IOException ioException) {
+				if(isVerbose) {
+					System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
+					ioException.printStackTrace();
+				}
+				return invoke0(proxy, method, args, ++callNum);
 			}
-			throw invalidClassException;
-		} catch(StreamCorruptedException streamCorruptedException) {
-			if(isVerbose) {
-				System.err.println("NetworkedController encountered a StreamCorruptedException. Will retry invocation...");
-				streamCorruptedException.printStackTrace();
-			}
-			return invoke0(proxy, method, args, ++callNum);
-		} catch(OptionalDataException optionalDataException) {
-			if(isVerbose) {
-				System.err.println("FATAL: NetworkedController received primitive data types instead of objects. The client/NetworkedResponder needs to wrap primitives.");
-				optionalDataException.printStackTrace();
-			}
-			throw optionalDataException;
-		} catch(IOException ioException) {
-			if(isVerbose) {
-				System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
-				ioException.printStackTrace();
-			}
-			return invoke0(proxy, method, args, ++callNum);
 		}
 	}
 

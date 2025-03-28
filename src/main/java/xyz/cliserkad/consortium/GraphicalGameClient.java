@@ -295,7 +295,7 @@ public class GraphicalGameClient implements GameClient {
 	}
 
 	@Override
-	public boolean update(GameState gameState) {
+	public void update(GameState gameState) {
 		if(saveNextGameState) {
 			try {
 				File file = new File(gameState.hashCode() + "_GameState.ser");
@@ -356,11 +356,10 @@ public class GraphicalGameClient implements GameClient {
 			}
 		}
 		frame.repaint();
-		return true;
 	}
 
 	@Override
-	public String name(final Integer ignoreMe) {
+	public String name() {
 		return name;
 	}
 

@@ -7,14 +7,16 @@ public interface GameClient extends GameStateReceiver {
 	 */
 	PlayerAction poll(final Player avatar, final GameState gameState, final Class<? extends PlayerAction> prompt);
 
+	@NetOptional
 	void sendMessage(final String message);
 
+	@NetOptional
 	default void setPlayerID(final Integer playerID) {
 		// do nothing
 	}
 
-	// TODO: fix failure on 0 argument methods with NetworkedController
-	default String name(final Integer ignoreMe) {
+	@NetOptional
+	default String name() {
 		return "";
 	}
 

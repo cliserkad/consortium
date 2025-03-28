@@ -67,7 +67,7 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 	}
 
 	@Override
-	public boolean update(GameState gameState) {
+	public void update(GameState gameState) {
 		element = gameState.getBoardElement(element.position);
 
 		final int targetComponentCount;
@@ -102,7 +102,6 @@ public class BoardElementVisual extends JPanel implements GameStateReceiver {
 
 		validate();
 		repaint();
-		return true;
 	}
 
 }

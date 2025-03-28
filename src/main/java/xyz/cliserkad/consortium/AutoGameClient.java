@@ -75,9 +75,8 @@ public class AutoGameClient implements GameClient {
 	}
 
 	@Override
-	public boolean update(GameState gameState) {
+	public void update(GameState gameState) {
 		// The ai doesn't care about intermittent game state, it only cares about the game state on its turn
-		return true;
 	}
 
 }
