@@ -8,7 +8,7 @@ public interface ConnectionMaintenance {
 		return Instant.now();
 	}
 
-	String version(String version);
+	String version();
 
 	void setConnectionPolicy(ConnectionPolicy policy, String rationale);
 

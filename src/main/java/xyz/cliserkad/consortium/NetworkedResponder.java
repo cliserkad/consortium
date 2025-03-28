@@ -12,11 +12,11 @@ import java.util.List;
  * A client which responds to method invocations made by a NetworkedController, sending the results back over the network.
  * The InterfaceInstance should be the same class used to create the corresponding server side NetworkedController.
  */
-public class NetworkedResponder<InterfaceInstance> extends Thread implements ConnectionMaintenance {
+public class NetworkedResponder<DelegateType> extends Thread implements ConnectionMaintenance {
 
 	public static final boolean DEFAULT_IS_VERBOSE = false;
 
-	private final InterfaceInstance interfaceInstance;
+	private final DelegateType delegate;
 	public final String address;
 	public final int port;
 
@@ -27,8 +27,8 @@ public class NetworkedResponder<InterfaceInstance> extends Thread implements Con
 	public boolean isVerbose;
 	private ConnectionPolicy connectionPolicy;
 
-	public NetworkedResponder(InterfaceInstance interfaceInstance, final String ip, final int port, final boolean isVerbose) throws IOException {
-		this.interfaceInstance = interfaceInstance;
+	public NetworkedResponder(DelegateType delegate, final String ip, final int port, final boolean isVerbose) throws IOException {
+		this.delegate = delegate;
 		this.address = ip;
 		this.port = port;
 		this.arguments = new ArrayList<>();
@@ -40,8 +40,8 @@ public class NetworkedResponder<InterfaceInstance> extends Thread implements Con
 			System.out.println("Networked responder created for " + ip + ":" + port);
 	}
 
-	public NetworkedResponder(InterfaceInstance interfaceInstance, final String ip, final int port) throws IOException {
-		this(interfaceInstance, ip, port, DEFAULT_IS_VERBOSE);
+	public NetworkedResponder(DelegateType delegate, final String ip, final int port) throws IOException {
+		this(delegate, ip, port, DEFAULT_IS_VERBOSE);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class NetworkedResponder<InterfaceInstance> extends Thread implements Con
 				if(cmd.isMaintenance) {
 					target = this;
 				} else {
-					target = interfaceInstance;
+					target = delegate;
 				}
 
 				try {
@@ -120,11 +120,8 @@ public class NetworkedResponder<InterfaceInstance> extends Thread implements Con
 	}
 
 	@Override
-	public String version(String version) {
-		if(!version.equals(Version.COMMIT_ID)) {
-			System.out.println("NetworkedResponder received a version mismatch:\n\t" + version + "\n\t" + Version.COMMIT_ID);
-		}
-		return Version.COMMIT_ID + " hahahahah";
+	public String version() {
+		return Version.COMMIT_ID;
 	}
 
 	@Override

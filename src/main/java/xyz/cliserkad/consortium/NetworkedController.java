@@ -6,15 +6,17 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.Instant;
 
 /**
- * Controls the invocation of methods on a remote object by sending method calls over a network connection, available methods are defined by providing an array of interfaces to the constructor
+ * Controls the invocation of methods on a remote object by sending method calls over a network connection.
+ * Available methods are defined by providing an interface class (ProxyType) to the constructor.
  */
-public class NetworkedController<InterfaceClass> extends Thread implements InvocationHandler {
+public class NetworkedController<ProxyType> extends Thread implements InvocationHandler, ConnectionMaintenance {
 
 	public static final boolean DEFAULT_IS_VERBOSE = false;
 
-	public final InterfaceClass proxy;
+	public final ProxyType proxy;
 	private final ConnectionMaintenance maintenance;
 	public final int port;
 
@@ -26,22 +28,24 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
+	private ConnectionPolicy connectionPolicy;
 	public boolean isVerbose;
 
 	/**
-	 * Initializes a new networked controller, against which all methods supplied by InterfaceClass can be invoked. The controller will listen on the specified port for incoming connections.
+	 * Initializes a new networked controller, against which all methods supplied by ProxyType can be invoked. The controller will listen on the specified port for incoming connections.
 	 */
-	public NetworkedController(final int port, final Class<InterfaceClass> interfaceClass, final boolean isVerbose) throws IOException {
+	public NetworkedController(final int port, final Class<ProxyType> proxy, final boolean isVerbose) throws IOException {
 		this.port = port;
 		this.isVerbose = isVerbose;
+		connectionPolicy = ConnectionPolicy.REQUIRED;
 
 		// trust that the standard library actually works
-		proxy = (InterfaceClass) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[] { interfaceClass }, this);
+		this.proxy = (ProxyType) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[] { proxy }, this);
 		maintenance = (ConnectionMaintenance) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[] { ConnectionMaintenance.class }, this);
 	}
 
-	public NetworkedController(final int port, final Class<InterfaceClass> interfaceClass) throws IOException {
-		this(port, interfaceClass, DEFAULT_IS_VERBOSE);
+	public NetworkedController(final int port, final Class<ProxyType> proxy) throws IOException {
+		this(port, proxy, DEFAULT_IS_VERBOSE);
 	}
 
 	@Override
@@ -63,11 +67,13 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());
 
-			final String clientVersion = maintenance.version(Version.COMMIT_ID);
+			final String clientVersion = maintenance.version();
 			if(!clientVersion.equals(Version.COMMIT_ID))
 				System.err.println("Version mismatch with " + clientSocket.getRemoteSocketAddress() + "\n\tLocal : " + Version.COMMIT_ID + "\n\tClient: " + clientVersion);
 			else if(isVerbose)
 				System.out.println("Version match with " + clientSocket.getRemoteSocketAddress());
+
+			setConnectionPolicy(connectionPolicy, "");
 		} catch(IOException e) {
 			if(isVerbose) {
 				System.err.println("NetworkedController encountered an IOException. Will retry connection...");
@@ -86,6 +92,9 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 	}
 
 	private Object invoke0(Object proxy, Method method, Object[] args, int callNum) throws Throwable {
+		if(connectionPolicy == ConnectionPolicy.FORBIDDEN)
+			throw new IllegalStateException("Connection policy is set to FORBIDDEN. No method invocations are allowed.");
+
 		if(callNum != 0)
 			sleep();
 
@@ -177,6 +186,39 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 	@Override
 	public String toString() {
 		return NetworkedController.class.getName() + "\nProxy:" + proxy.getClass().getSuperclass() + "\nPort: " + port + "\nClient Address: " + clientSocket.getRemoteSocketAddress() + "\nVerbose?: " + isVerbose;
+	}
+
+	@Override
+	public Instant ping() {
+		return maintenance.ping();
+	}
+
+	@Override
+	public String version() {
+		return maintenance.version();
+	}
+
+	@Override
+	public void setConnectionPolicy(ConnectionPolicy policy, String rationale) {
+		if(isVerbose) {
+			System.out.println("Setting connection policy to: " + policy + " with rationale: " + rationale);
+		}
+		connectionPolicy = policy;
+		maintenance.setConnectionPolicy(policy, rationale);
+
+		if(connectionPolicy == ConnectionPolicy.FORBIDDEN) {
+			try {
+				in.close();
+				out.close();
+				serverSocket.close();
+				clientSocket.close();
+			} catch(IOException e) {
+				if(isVerbose) {
+					System.err.println("Failed to clean up FORBIDDEN connection");
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }
