@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A client which responds to method invocations made by a NetworkedController, sending the results back over the network. The InterfaceInstance should be the same class used to create the corresponding server side NetworkedController.
+ * A client which responds to method invocations made by a NetworkedController, sending the results back over the network.
+ * The InterfaceInstance should be the same class used to create the corresponding server side NetworkedController.
  */
-public class NetworkedResponder<InterfaceInstance> extends Thread {
+public class NetworkedResponder<InterfaceInstance> extends Thread implements ConnectionMaintenance {
 
 	public static final boolean DEFAULT_IS_VERBOSE = false;
 
@@ -25,6 +25,7 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 	private ObjectOutputStream out;
 	private List<Object> arguments;
 	public boolean isVerbose;
+	private ConnectionPolicy connectionPolicy;
 
 	public NetworkedResponder(InterfaceInstance interfaceInstance, final String ip, final int port, final boolean isVerbose) throws IOException {
 		this.interfaceInstance = interfaceInstance;
@@ -32,6 +33,8 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 		this.port = port;
 		this.arguments = new ArrayList<>();
 		this.isVerbose = isVerbose;
+		// assume we need to start the connection immediately
+		connectionPolicy = ConnectionPolicy.REQUIRED;
 
 		if(isVerbose)
 			System.out.println("Networked responder created for " + ip + ":" + port);
@@ -43,18 +46,23 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 
 	@Override
 	public void start() {
-		// TODO: Make this loop more robust
-		if(isVerbose)
-			System.out.println("Networked responder started on thread " + Thread.currentThread().threadId());
-		try {
-			this.socket = new Socket(address, port);
-			this.out = new ObjectOutputStream(socket.getOutputStream());
-			this.in = new ObjectInputStream(socket.getInputStream());
+		while(connectionPolicy.mayReconnect()) {
+			while(!connect()) {
+				try {
+					if(isVerbose)
+						System.out.println("Networked responder failed to connect, retrying in 5 seconds");
+					Thread.sleep(5000);
+				} catch(InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			dispatchLoop();
 			if(isVerbose)
-				System.out.println("CLIENT Connected to server at " + socket.getRemoteSocketAddress());
-		} catch(IOException e) {
-			throw new RuntimeException(e);
+				System.out.println("Networked responder disconnected.");
 		}
+	}
+
+	private void dispatchLoop() {
 		while(socket.isConnected()) {
 			final Object obj;
 			try {
@@ -72,36 +80,65 @@ public class NetworkedResponder<InterfaceInstance> extends Thread {
 					return;
 				}
 
-				List<Class<?>> parameterTypes = new ArrayList<>();
-				for(Object argument : arguments) {
-					parameterTypes.add(argument.getClass());
-				}
-
-				final Method targetMethod;
-				try {
-					targetMethod = interfaceInstance.getClass().getMethod(cmd.methodName, parameterTypes.toArray(new Class<?>[] {}));
-				} catch(NoSuchMethodException e) {
-					panic(e);
-					return;
+				final Object target;
+				if(cmd.isMaintenance) {
+					target = this;
+				} else {
+					target = interfaceInstance;
 				}
 
 				try {
-					out.writeObject(targetMethod.invoke(interfaceInstance, arguments.toArray()));
-				} catch(IllegalAccessException | IOException | InvocationTargetException e) {
+					out.writeObject(cmd.against(target));
+				} catch(IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e) {
 					panic(e);
 					return;
 				}
-
-				arguments.clear();
 			} else {
-				arguments.add(obj);
+				System.err.println("NetworkedResponder received an object that was not a MethodInvocation:\n" + obj);
 			}
 		}
-		panic(new IOException("Connection closed."));
+	}
+
+	private boolean connect() {
+		if(isVerbose)
+			System.out.println("Networked responder attempting to connect on thread " + Thread.currentThread().threadId());
+		try {
+			this.socket = new Socket(address, port);
+			this.out = new ObjectOutputStream(socket.getOutputStream());
+			this.in = new ObjectInputStream(socket.getInputStream());
+			if(isVerbose)
+				System.out.println("CLIENT Connected to server at " + socket.getRemoteSocketAddress());
+			return true;
+		} catch(IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	private void panic(Exception e) {
 		e.printStackTrace();
+	}
+
+	@Override
+	public String version(String version) {
+		if(!version.equals(Version.COMMIT_ID)) {
+			System.out.println("NetworkedResponder received a version mismatch:\n\t" + version + "\n\t" + Version.COMMIT_ID);
+		}
+		return Version.COMMIT_ID + " hahahahah";
+	}
+
+	@Override
+	public void setConnectionPolicy(ConnectionPolicy policy, String rationale) {
+		if(isVerbose)
+			System.out.println("NetworkedResponder setting connection policy to " + policy + " with rationale: " + rationale);
+		this.connectionPolicy = policy;
+		if(policy == ConnectionPolicy.FORBIDDEN) {
+			try {
+				socket.close();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

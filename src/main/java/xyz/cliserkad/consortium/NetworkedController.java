@@ -15,6 +15,7 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 	public static final boolean DEFAULT_IS_VERBOSE = false;
 
 	public final InterfaceClass proxy;
+	private final ConnectionMaintenance maintenance;
 	public final int port;
 
 	/**
@@ -36,6 +37,7 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 
 		// trust that the standard library actually works
 		proxy = (InterfaceClass) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[] { interfaceClass }, this);
+		maintenance = (ConnectionMaintenance) Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[] { ConnectionMaintenance.class }, this);
 	}
 
 	public NetworkedController(final int port, final Class<InterfaceClass> interfaceClass) throws IOException {
@@ -55,10 +57,17 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 			if(isVerbose)
 				System.out.println("Server started and listening on port " + serverSocket.getLocalPort());
 			clientSocket = serverSocket.accept();
+
 			if(isVerbose)
 				System.out.println("Client connected from " + clientSocket.getRemoteSocketAddress());
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			in = new ObjectInputStream(clientSocket.getInputStream());
+
+			final String clientVersion = maintenance.version(Version.COMMIT_ID);
+			if(!clientVersion.equals(Version.COMMIT_ID))
+				System.err.println("Version mismatch with " + clientSocket.getRemoteSocketAddress() + "\n\tLocal : " + Version.COMMIT_ID + "\n\tClient: " + clientVersion);
+			else if(isVerbose)
+				System.out.println("Version match with " + clientSocket.getRemoteSocketAddress());
 		} catch(IOException e) {
 			if(isVerbose) {
 				System.err.println("NetworkedController encountered an IOException. Will retry connection...");
@@ -66,6 +75,8 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 			}
 			sleep();
 			run0();
+		} catch(Throwable e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -94,10 +105,9 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 			return invoke0(proxy, method, args, ++callNum);
 		}
 
+		final MethodInvocation invocation = new MethodInvocation(method, args, proxy == maintenance);
 		try {
-			for(Object arg : args) {
-				out.writeObject(arg);
-			}
+			out.writeObject(invocation);
 		} catch(InvalidClassException invalidClassException) {
 			if(isVerbose) {
 				System.err.println("FATAL: NetworkedController can't write out given class.");
@@ -110,22 +120,6 @@ public class NetworkedController<InterfaceClass> extends Thread implements Invoc
 				notSerializableException.printStackTrace();
 			}
 			throw notSerializableException;
-		} catch(IOException ioException) {
-			if(isVerbose) {
-				System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
-				ioException.printStackTrace();
-			}
-			return invoke0(proxy, method, args, ++callNum);
-		}
-
-		try {
-			out.writeObject(new MethodInvocation(method.getName()));
-		} catch(InvalidClassException | NotSerializableException invalidClassException) {
-			if(isVerbose) {
-				System.err.println("FATAL: NetworkedController can't serialize the MethodInvocation object.");
-				invalidClassException.printStackTrace();
-			}
-			throw invalidClassException;
 		} catch(IOException ioException) {
 			if(isVerbose) {
 				System.err.println("NetworkedController encountered an IOException. Will retry invocation...");
