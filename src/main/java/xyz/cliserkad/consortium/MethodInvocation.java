@@ -13,16 +13,18 @@ public class MethodInvocation implements Serializable {
 
 	// Method is not serializable 😢
 	public final transient Method method;
+	public final String declaringClassName;
 	public final String methodName;
 	public final Object[] arguments;
 	public final boolean isMaintenance;
 	public final boolean isOptional;
 
-	public MethodInvocation(Method method, Object[] arguments, boolean isMaintenance) {
+	public MethodInvocation(Method method, Object[] arguments) {
 		this.method = method;
+		this.declaringClassName = method.getDeclaringClass().getName();
 		this.methodName = method.getName(); // Store method name for serialization
 		this.arguments = arguments;
-		this.isMaintenance = isMaintenance;
+		this.isMaintenance = declaringClassName.equals(ConnectionMaintenance.class.getName());
 		this.isOptional = method.isAnnotationPresent(NetOptional.class);
 	}
 

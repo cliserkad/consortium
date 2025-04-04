@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * A client which responds to method invocations made by a NetworkedController, sending the results back over the network.
@@ -26,6 +27,7 @@ public class NetworkedResponder<DelegateType> extends Thread implements Connecti
 	private List<Object> arguments;
 	public boolean isVerbose;
 	private ConnectionPolicy connectionPolicy;
+	private UUID sessionID = null;
 
 	public NetworkedResponder(DelegateType delegate, final String ip, final int port, final boolean isVerbose) throws IOException {
 		this.delegate = delegate;
@@ -156,6 +158,16 @@ public class NetworkedResponder<DelegateType> extends Thread implements Connecti
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public UUID getSessionID() {
+		return sessionID;
+	}
+
+	@Override
+	public void setSessionID(UUID id) {
+		this.sessionID = id;
 	}
 
 }

@@ -30,9 +30,12 @@ public class GameServer {
 
 		System.out.println("Public IP: " + publicIP());
 
+		ConnectionManager manager = new ConnectionManager(BASE_PORT);
+		manager.start();
+
 		List<NetworkedController<GameClient>> controllers = new ArrayList<>();
 		for(int i = 0; i < lobbyConfig.networkClients; i++) {
-			controllers.add(new NetworkedController<>(BASE_PORT + i, GameClient.class, true));
+			controllers.add(new NetworkedController<>(GameClient.class, manager));
 		}
 
 		for(NetworkedController<GameClient> controller : controllers) {
